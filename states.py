@@ -6,6 +6,7 @@ class BuyAppleStates(StatesGroup):
     choosing_memory = State()
     choosing_color = State()
     entering_phone = State()
+    confirming = State()
 
 class BuyAndroidStates(StatesGroup):
     choosing_brand = State()
@@ -13,7 +14,7 @@ class BuyAndroidStates(StatesGroup):
     awaiting_admin_response = State()
 
 class SellAppleStates(StatesGroup):
-    choosing_device = State()
+    entering_device = State()
     entering_model = State()
     entering_memory = State()
     entering_battery = State()
