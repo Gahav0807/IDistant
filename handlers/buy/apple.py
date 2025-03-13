@@ -39,10 +39,10 @@ async def process_condition(message: types.Message, state: FSMContext):
             await message.answer("Выберите модель iPhone (13-16):", reply_markup=iphone_models)
             await state.set_state(BuyAppleStates.choosing_model)
     
-    if category == "Эпл вотч":
-        if condition == "Новое":
-            await message.answer("Выберите модель Эпл вотч:", reply_markup=iphone_models)
-            await state.set_state(BuyAppleStates.choosing_model)
+    # if category == "Эпл вотч":
+    #     if condition == "Новое":
+    #         await message.answer("Выберите модель Эпл вотч:", reply_markup=iphone_models)
+    #         await state.set_state(BuyAppleStates.choosing_model)
 
 @apple_buy_router.message(BuyAppleStates.pick_up_by_value)
 async def pick_up_value(message: types.Message, state: FSMContext):
@@ -52,6 +52,20 @@ async def pick_up_value(message: types.Message, state: FSMContext):
     await message.answer("Введите ваш номер телефона для связи или нажмите кнопку ниже:", reply_markup=share_phone_keyboard)
     await state.set_state(BuyAppleStates.entering_phone)
 
+@apple_buy_router.message(BuyAppleStates.choosing_model)
+async def choose_iphone_memory(message: types.Message, state: FSMContext):
+    model = message.text
+    await state.update_data(model=model)
+
+    # Проверяем, содержит ли модель "Pro" или "Plus"
+    if "Pro" in model or "Plus" in model:
+        memory_menu = all_memory_menu
+    else:
+        memory_menu = while_512_memory_menu
+
+    await message.answer("Выберите объем памяти:", reply_markup=memory_menu)
+    await state.set_state(BuyAppleStates.choosing_memory)
+    
 @apple_buy_router.message(BuyAppleStates.choosing_memory)
 async def choose_iphone_color(message: types.Message, state: FSMContext):
     memory = message.text
