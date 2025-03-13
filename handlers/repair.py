@@ -6,7 +6,7 @@ from states import RepairStates
 
 router = Router()
 
-@router.message(Command("repair"))
+@router.message(lambda message: message.text == "Ремонт")
 async def start_repair(message: types.Message):
     await message.answer("Выберите категорию устройства для ремонта:", reply_markup=repair_menu)
 
@@ -32,8 +32,8 @@ async def apple_repair_description(message: types.Message, state: FSMContext):
     await message.answer("Прикрепите фото устройства (если есть):", reply_markup=types.ReplyKeyboardRemove())
     await state.set_state(RepairStates.attaching_photos)
 
-@router.message(RepairStates.attaching_photos, content_types=types.ContentType.PHOTO)
-async def apple_repair_photos(message: types.Message, state: FSMContext):
+@router.message(RepairStates.attaching_photos)
+async def apple_repair_photos(message: types.ChatPhoto, state: FSMContext):
     await state.update_data(photo=message.photo[-1].file_id)
     await message.answer("Введите ваш номер телефона для связи:")
     await state.set_state(RepairStates.entering_phone)
@@ -62,8 +62,8 @@ async def android_repair_description(message: types.Message, state: FSMContext):
     await message.answer("Прикрепите фото устройства (если есть):", reply_markup=types.ReplyKeyboardRemove())
     await state.set_state(RepairStates.attaching_photos)
 
-@router.message(RepairStates.attaching_photos, content_types=types.ContentType.PHOTO)
-async def android_repair_photos(message: types.Message, state: FSMContext):
+@router.message(RepairStates.attaching_photos)
+async def android_repair_photos(message: types.ChatPhoto, state: FSMContext):
     await state.update_data(photo=message.photo[-1].file_id)
     await message.answer("Введите ваш номер телефона для связи:")
     await state.set_state(RepairStates.entering_phone)

@@ -15,3 +15,8 @@ async def start(message: types.Message):
     
     # Отправляем приветственное сообщение с кнопками
     await message.answer(welcome_message, reply_markup=main_menu)
+
+
+@router.message(lambda message: message.text == "Главное меню")
+async def start_buy(message: types.Message):
+    await message.answer("Вы находитесь в главном меню", reply_markup=main_menu)

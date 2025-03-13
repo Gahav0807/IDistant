@@ -7,7 +7,7 @@ from handlers import start, buy, sell, repair
 
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot(token=TOKEN, parse_mode="HTML")
+bot = Bot(token=TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
 dp.include_router(start.router)

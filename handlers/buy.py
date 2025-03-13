@@ -6,7 +6,7 @@ from keyboards import buy_menu, buy_apple_menu, condition_menu, iphone_models, m
 
 router = Router()
 
-@router.message(Command("buy"))
+@router.message(lambda message: message.text == "Купить")
 async def start_buy(message: types.Message):
     await message.answer("Выберите категорию устройства:", reply_markup=buy_menu)
 
