@@ -2,12 +2,12 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 # Меню выбора устройств Apple при покупке
 apple_device_menu_builder = ReplyKeyboardBuilder()
-apple_device_menu_builder.button(text="Айфон")
-apple_device_menu_builder.button(text="Эпл Вотч")
+apple_device_menu_builder.button(text="IPhone")
+apple_device_menu_builder.button(text="Apple Watch")
 apple_device_menu_builder.adjust(2)
-apple_device_menu_builder.button(text="Подсы")
-apple_device_menu_builder.button(text="Мак")
-apple_device_menu_builder.button(text="Айпад")
+apple_device_menu_builder.button(text="AirPods")
+apple_device_menu_builder.button(text="Mac")
+apple_device_menu_builder.button(text="IPad")
 apple_device_menu_builder.adjust(1)
 apple_device_menu_builder.button(text="Главное меню")
 apple_device_menu = apple_device_menu_builder.as_markup(resize_keyboard=True)
