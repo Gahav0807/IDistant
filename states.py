@@ -11,6 +11,7 @@ class BuyAppleStates(StatesGroup):
     choosing_size = State()        # Выбор размера для Apple Watch
     pick_up_by_value = State() 
     condition = State() 
+    choosing_airpods_way = State()
 
 class BuyAndroidStates(StatesGroup):
     choosing_brand = State()
