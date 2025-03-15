@@ -1,107 +1,114 @@
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import Command
 from states import SellAppleStates
-from keyboards.common import main_menu, confirm_menu
-from keyboards.apple import apple_device_menu
+from keyboards.apple import apple_device_menu, iphone_models, apple_watch_models
+from keyboards.common import share_phone_keyboard, confirm_menu, all_memory_menu, while_512_memory_menu
 
-sell_apple_router = Router()
+apple_sell_router = Router()
 
-# Кнопки выбора категории устройства Apple
-apple_devices_keyboard = types.ReplyKeyboardMarkup(
-    keyboard=[
-        [types.KeyboardButton(text="Эпл Вотч"), types.KeyboardButton(text="Айфон")],
-        [types.KeyboardButton(text="Мак"), types.KeyboardButton(text="Подсы")],
-        [types.KeyboardButton(text="Айпад")]
-    ],
-    resize_keyboard=True
-)
-
-@sell_apple_router.message(lambda message: message.text == "Продать Apple")
+@apple_sell_router.message(lambda message: message.text == "Apple💸")
 async def sell_apple(message: types.Message, state: FSMContext):
     await message.answer("Выберите устройство, которое хотите продать:", reply_markup=apple_device_menu)
     await state.set_state(SellAppleStates.entering_device)
 
-@sell_apple_router.message(SellAppleStates.entering_device)
-async def enter_device_details(message: types.Message, state: FSMContext):
-    device = message.text
-    if device == "Подсы":
-        await message.answer("Скупаем только оригинал.")
+@apple_sell_router.message(SellAppleStates.entering_device)
+async def select_device(message: types.Message, state: FSMContext):
+    category = message.text
+    await state.update_data(category=category)
+    
+    if category.lower() == "airpods":
+        await message.answer("Мы скупаем только оригинальные AirPods")
         return
-    await state.update_data(device=device)
-    await message.answer("Введите модель устройства:")
-    await state.set_state(SellAppleStates.entering_model)
+    elif category.lower() == "iphone":
+        await message.answer("Введите модель устройства:", reply_markup=iphone_models)
+        await state.set_state(SellAppleStates.entering_model)
+        return
+    elif category.lower() == "apple watch":
+        await message.answer("Введите модель устройства:", reply_markup=apple_watch_models)
+        await state.set_state(SellAppleStates.entering_model)
+        return
 
-@sell_apple_router.message(SellAppleStates.entering_model)
-async def enter_memory(message: types.Message, state: FSMContext):
-    model = message.text
+@apple_sell_router.message(SellAppleStates.entering_model)
+async def enter_model(message: types.Message, state: FSMContext):
+    data = await state.get_data()
+    model=message.text
     await state.update_data(model=model)
-    await message.answer("Введите объем памяти устройства:")
-    await state.set_state(SellAppleStates.entering_memory)
+    if data['category'].lower() == 'airpods' or data['category'].lower() == 'apple watch':
+        await message.answer("Прикрепите фото устройства:")
+        await state.set_state(SellAppleStates.attaching_photos)
+        return
+    elif data['category'].lower() == 'iphone':
+        if "Pro" in model or "Plus" in model:
+            memory_menu = all_memory_menu
+        else:
+            memory_menu = while_512_memory_menu
 
-@sell_apple_router.message(SellAppleStates.entering_memory)
-async def enter_battery(message: types.Message, state: FSMContext):
-    memory = message.text
-    await state.update_data(memory=memory)
-    await message.answer("Введите состояние аккумулятора (например, 85%):")
+        await message.answer("Выберите объем памяти:", reply_markup=memory_menu)
+        await state.set_state(SellAppleStates.entering_memory)
+           
+
+@apple_sell_router.message(SellAppleStates.entering_memory)
+async def enter_memory(message: types.Message, state: FSMContext):
+    await state.update_data(memory=message.text)
+    await message.answer("Введите состояние аккумулятора в %:", reply_markup=types.ReplyKeyboardRemove())
     await state.set_state(SellAppleStates.entering_battery)
 
-@sell_apple_router.message(SellAppleStates.entering_battery)
-async def attach_photo(message: types.Message, state: FSMContext):
-    battery = message.text
-    await state.update_data(battery=battery)
+@apple_sell_router.message(SellAppleStates.entering_battery)
+async def enter_battery(message: types.Message, state: FSMContext):
+    await state.update_data(battery=message.text)
     await message.answer("Прикрепите фото устройства:")
-    await state.set_state(SellAppleStates.attaching_photo)
+    await state.set_state(SellAppleStates.attaching_photos)
 
-@sell_apple_router.message(SellAppleStates.attaching_photo, content_types=types.ContentType.PHOTO)
-async def enter_description(message: types.Message, state: FSMContext):
+@apple_sell_router.message(SellAppleStates.attaching_photos)
+async def upload_photo(message: types.ChatPhoto, state: FSMContext):
     photo_id = message.photo[-1].file_id
     await state.update_data(photo=photo_id)
-    await message.answer("Опишите товар (есть ли дефекты, был ли в ремонте, комплектность и т. д.):")
+    await message.answer("Опишите товар (есть ли дефекты, был ли в ремонте, комплект и т.д.):")
     await state.set_state(SellAppleStates.entering_description)
 
-@sell_apple_router.message(SellAppleStates.entering_description)
-async def enter_price(message: types.Message, state: FSMContext):
-    description = message.text
-    await state.update_data(description=description)
-    await message.answer("Введите вашу цену за устройство:")
+@apple_sell_router.message(SellAppleStates.entering_description)
+async def enter_description(message: types.Message, state: FSMContext):
+    await state.update_data(description=message.text)
+    await message.answer("Введите желаемую цену:")
     await state.set_state(SellAppleStates.entering_price)
 
-@sell_apple_router.message(SellAppleStates.entering_price)
-async def enter_phone_number(message: types.Message, state: FSMContext):
-    price = message.text
-    await state.update_data(price=price)
-    await message.answer("Введите ваш номер телефона для связи или нажмите кнопку ниже:", reply_markup=types.ReplyKeyboardMarkup(
-        keyboard=[[types.KeyboardButton(text="Отправить номер телефона", request_contact=True)]],
-        resize_keyboard=True
-    ))
+@apple_sell_router.message(SellAppleStates.entering_price)
+async def enter_price(message: types.Message, state: FSMContext):
+    await state.update_data(price=message.text)
+    await message.answer("Введите ваш номер телефона или нажмите кнопку ниже:", reply_markup=share_phone_keyboard)
     await state.set_state(SellAppleStates.entering_phone)
 
-@sell_apple_router.message(SellAppleStates.entering_phone, content_types=types.ContentType.CONTACT)
-async def confirm_submission(message: types.Message, state: FSMContext):
+@apple_sell_router.message(SellAppleStates.entering_phone, lambda message: message.contact)
+async def confirm_sale(message: types.Message, state: FSMContext):
     phone_number = message.contact.phone_number
+    await state.update_data(phone_number=phone_number)
     data = await state.get_data()
-    response = (f"Вы хотите продать {data['device']} {data['model']} {data['memory']} ГБ.\n"
-                f"Состояние аккумулятора: {data['battery']}\n"
+    
+    if data['category'].lower() == 'airpods' or data['category'].lower() == 'apple watch':
+        response = (
+                f"Вы хотите продать:"
+                f"{data['model']}\n"
                 f"Описание: {data['description']}\n"
                 f"Цена: {data['price']}\n"
-                f"Телефон: {phone_number}\n\n"
-                f"Подтвердите или отмените заявку.")
-    await state.update_data(phone_number=phone_number)
-    await message.answer_photo(data['photo'], caption=response, reply_markup=confirm_menu)
+                f"Номер телефона: {phone_number}\n\n"
+                "Подтвердите или отмените заявку.")
+    else:
+        response = (
+                f"Вы хотите продать:"
+                f"{data['model']} ({data['memory']})\n"
+                f"Состояние АКБ: {data['battery']}%\n"
+                f"Описание: {data['description']}\n"
+                f"Цена: {data['price']}\n"
+                f"Номер телефона: {phone_number}\n\n"
+                "Подтвердите или отмените заявку.")
+    
+    await message.answer(response, reply_markup=confirm_menu)
     await state.set_state(SellAppleStates.confirming)
 
-@sell_apple_router.message(SellAppleStates.confirming)
+@apple_sell_router.message(SellAppleStates.confirming)
 async def process_confirmation(message: types.Message, state: FSMContext):
     if message.text == "Подтвердить":
-        data = await state.get_data()
-        response = (f"Заявка принята! Данные переданы менеджеру:\n"
-                    f"{data['device']} {data['model']} {data['memory']} ГБ\n"
-                    f"Аккумулятор: {data['battery']}\n"
-                    f"Цена: {data['price']}\n"
-                    f"Телефон: {data['phone_number']}")
-        # Здесь можно добавить отправку данных менеджеру
-        await message.answer(response, reply_markup=main_menu)
+        await message.answer("Заявка отправлена! В ближайшее время с вами свяжется менеджер.")
     else:
         await message.answer("Вы отменили заявку.")
     await state.clear()

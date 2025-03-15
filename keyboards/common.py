@@ -16,7 +16,7 @@ main_menu = main_menu_builder.as_markup(resize_keyboard=True)
 
 # Меню покупки
 buy_menu_builder = ReplyKeyboardBuilder()
-buy_menu_builder.button(text="Apple")
+buy_menu_builder.button(text="Apple🍎")
 buy_menu_builder.button(text="Android")
 buy_menu_builder.button(text="Dyson")
 buy_menu_builder.adjust(2)
@@ -25,7 +25,7 @@ buy_menu = buy_menu_builder.as_markup(resize_keyboard=True)
 
 # Меню продажи
 sell_menu_builder = ReplyKeyboardBuilder()
-sell_menu_builder.button(text="Apple")
+sell_menu_builder.button(text="Apple💸")
 sell_menu_builder.button(text="Android")
 sell_menu_builder.adjust(2)
 sell_menu_builder.button(text="Главное меню")

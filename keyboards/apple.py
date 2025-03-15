@@ -84,8 +84,11 @@ air_pods_ways = air_pods_ways_builder.as_markup(resize_keyboard=True)
 air_pods_models_builder = ReplyKeyboardBuilder()
 air_pods_models_builder.button(text="AirPods 2")
 air_pods_models_builder.button(text="AirPods 3")
-air_pods_models_builder.button(text="AirPods 4")
-air_pods_models_builder.adjust(2)  
+air_pods_models_builder.adjust(3) 
+air_pods_models_builder.button(text="AirPods 4") 
+air_pods_models_builder.button(text="AirPods Pro")
+air_pods_models_builder.button(text="AirPods Pro 2")
+air_pods_models_builder.adjust(1) 
 air_pods_models_builder.button(text="Главное меню")  # Кнопка для возврата
 air_pods_models = air_pods_models_builder.as_markup(resize_keyboard=True)
 

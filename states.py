@@ -1,17 +1,19 @@
 from aiogram.fsm.state import State, StatesGroup
 
 class BuyAppleStates(StatesGroup):
+    choosing_device = State()
     choosing_category = State()    # Выбор категории (Айфон, Эпл Вотч, Подсы, Мак, Айпад)
     choosing_model = State()       # Выбор модели (iPhone, Apple Watch, Подсы, Mac)
     choosing_memory = State()      # Выбор объёма памяти (только для iPhone)
     choosing_color = State()       # Выбор цвета (iPhone, Apple Watch)
-    entering_phone = State()       # Ввод номера телефона
-    confirming = State()           # Подтверждение заявки
+    entering_phone = State()       # Ввод номера телефона          
     choosing_type = State()        # Выбор типа для Подсов и Мак (Оригинал/Копия)
     choosing_size = State()        # Выбор размера для Apple Watch
     pick_up_by_value = State() 
     condition = State() 
     choosing_airpods_way = State()
+    way_to_buy = State()
+    confirming = State()    
 
 class BuyAndroidStates(StatesGroup):
     choosing_brand = State()
@@ -27,6 +29,7 @@ class SellAppleStates(StatesGroup):
     entering_description = State()
     entering_price = State()
     entering_phone = State()
+    confirming = State()    
 
 class SellAndroidStates(StatesGroup):
     entering_model = State()

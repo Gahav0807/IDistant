@@ -8,11 +8,12 @@ apple_buy_router = Router()
 
 # ---------------------------APPLE------------------------------------------
 
-@apple_buy_router.message(lambda message: message.text == "Apple")
+@apple_buy_router.message(lambda message: message.text == "Apple🍎")
 async def buy_apple(message: types.Message, state: FSMContext):
     await message.answer("Выберите устройство, которое хотите купить:", reply_markup=apple_device_menu)
+    await state.set_state(BuyAppleStates.choosing_device)
 
-@apple_buy_router.message(lambda message: message.text in ["IPhone", "Apple Watch", "AirPods", "Mac", "IPad"])
+@apple_buy_router.message(BuyAppleStates.choosing_device)
 async def choose_condition(message: types.Message, state: FSMContext):
     category = message.text
     await state.update_data(category=category)
@@ -23,6 +24,7 @@ async def choose_condition(message: types.Message, state: FSMContext):
         return
     
     await message.answer("Выберите состояние устройства:", reply_markup=condition_menu)
+    await state.set_state(BuyAppleStates.way_to_buy)
 
 @apple_buy_router.message(BuyAppleStates.choosing_airpods_way)
 async def choose_condition(message: types.Message, state: FSMContext):
@@ -38,7 +40,7 @@ async def choose_condition(message: types.Message, state: FSMContext):
         await state.set_state(BuyAppleStates.choosing_model)
         return
 
-@apple_buy_router.message(lambda message: message.text in ["Новое", "БУ", "Подобрать"])
+@apple_buy_router.message(BuyAppleStates.way_to_buy)
 async def process_condition(message: types.Message, state: FSMContext):
     condition = message.text
     data = await state.get_data()
@@ -105,6 +107,22 @@ async def choose_model(message: types.Message, state: FSMContext):
             await state.set_state(BuyAppleStates.choosing_size)
 
     elif category.lower() == "airpods":
+        if model.lower() == "airpods 2":
+            value = 990
+            await state.update_data(value_of_airpods=value)
+        elif model.lower() == "airpods 3":
+            value = 1990
+            await state.update_data(value_of_airpods=value)
+        elif model.lower() == "airpods 4":
+            value = 1990
+            await state.update_data(value_of_airpods=value)
+        elif model.lower() == "airpods Pro":
+            value = 1420
+            await state.update_data(value_of_airpods=value)
+        elif model.lower() == "airpods Pro 2":
+            value = 1990
+            await state.update_data(value_of_airpods=value)
+        
         await message.answer("Введите свой номер связи: ", reply_markup=share_phone_keyboard)
         await state.set_state(BuyAppleStates.entering_phone)
 
@@ -137,6 +155,7 @@ async def confirm_buy_contact(message: types.Message, state: FSMContext):
     category = data['category'].lower()
     airpods_way = data.get('airpods_way', '')  # Если не AirPods, будет пустая строка
     condition = data.get('condition', '').lower()  # Если нет, то пустая строка
+    value_of_airpods = data.get('value_of_airpods', '')
 
     if condition == 'подобрать':
         await state.update_data(phone_number=message.contact.phone_number)
@@ -148,8 +167,15 @@ async def confirm_buy_contact(message: types.Message, state: FSMContext):
         await state.set_state(BuyAppleStates.confirming)
         return
     else:
+        if category.lower() == 'iphone':
+            response = (f"Вы хотите купить: {data['model']} {data['memory']} {data['color']}\n"
+                        f"Номер для связи: {phone_number}\n\n"
+                        f"Подтвердите или отмените заявку.")
+            await message.answer(response, reply_markup=confirm_menu)
+            await state.set_state(BuyAppleStates.confirming)
+
         if category.lower() == 'apple watch':
-            response = (f"Вы хотите купить: {data['category']} {data['model']} {data['color']}\n"
+            response = (f"Вы хотите купить: {data['model']} {data['color']}\n"
                         f"Номер для связи: {phone_number}\n\n"
                         f"Подтвердите или отмените заявку.")
             await message.answer(response, reply_markup=confirm_menu)
@@ -157,58 +183,25 @@ async def confirm_buy_contact(message: types.Message, state: FSMContext):
 
         if category.lower() == 'airpods':
             if airpods_way.lower() == 'оригинал':
-                response = (f"Вы хотите купить: {data['category']} {data['model']}\n"
+                response = (f"Вы хотите купить: {data['model']} \n"
                             f"Номер для связи: {phone_number}\n\n"
                             f"Подтвердите или отмените заявку.")
                 await message.answer(response, reply_markup=confirm_menu)
                 await state.set_state(BuyAppleStates.confirming)
 
             if airpods_way.lower() == 'копия':
-                response = (f"Вы хотите купить: {data['category']} {data['model']}\n"
-                            f"Цена: 100руб\n"
+                response = (f"Вы хотите купить: {data['model']}\n"
+                            f"Цена: {value_of_airpods}\n"
                             f"Номер для связи: {phone_number}\n\n"
                             f"Подтвердите или отмените заявку.")
                 await message.answer(response, reply_markup=confirm_menu)
                 await state.set_state(BuyAppleStates.confirming)
 
-        else:
-            response = (f"Вы хотите купить: {data['model']} {data['memory']} {data['color']}\n"
-                        f"Номер для связи: {phone_number}\n\n"
-                        f"Подтвердите или отмените заявку.")
-            await message.answer(response, reply_markup=confirm_menu)
-            await state.set_state(BuyAppleStates.confirming)
-
 @apple_buy_router.message(BuyAppleStates.confirming)
 async def process_confirmation(message: types.Message, state: FSMContext):
-    data = await state.get_data()
-    condition = data.get('condition', '').lower()  # Если нет, то пустая строка
-    category = data['category']
-
     if message.text == "Подтвердить":
-        if condition == 'подобрать': 
-            await message.answer("Готово! Ожидайте обратной связи от администратора", reply_markup=main_menu)
-            return
-
-        if category.lower() == 'apple watch':
-            response = (f"Заявка подтверждена!\n"
-                        f"Данные переданы менеджеру:\n"
-                        f"{data['category']} \n{data['model']} \n{data['color']}\n"
-                        f"Телефон: {data['phone_number']}")
-            await message.answer(response, reply_markup=main_menu)
-            
-        if category.lower() == 'airpods':
-            response = (f"Заявка подтверждена!\n"
-                        f"Данные переданы менеджеру:\n"
-                        f"{data['model']}\n"
-                        f"Телефон: {data['phone_number']}")
-            
-        else:
-            response = (f"Заявка подтверждена!\n"
-                        f"Данные переданы менеджеру:\n"
-                        f"{data['category']} \n{data['model']} \n{data['memory']} \n{data['color']}\n"
-                        f"Телефон: {data['phone_number']}")
-
-        await message.answer(response, reply_markup=main_menu)
+        await message.answer("Готово! Ожидайте обратной связи от администратора", reply_markup=main_menu)
+        return
     else:
         await message.answer("Вы отменили заявку.")
     
