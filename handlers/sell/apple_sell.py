@@ -1,8 +1,8 @@
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 from states import SellAppleStates
-from keyboards.apple import apple_device_menu, iphone_models, apple_watch_models
-from keyboards.common import share_phone_keyboard, confirm_menu, all_memory_menu, while_512_memory_menu
+from keyboards.apple import apple_device_menu, iphone_models, apple_watch_models, air_pods_models
+from keyboards.common import main_menu, share_phone_keyboard, confirm_menu, all_memory_menu, while_512_memory_menu
 
 apple_sell_router = Router()
 
@@ -18,6 +18,8 @@ async def select_device(message: types.Message, state: FSMContext):
     
     if category.lower() == "airpods":
         await message.answer("Мы скупаем только оригинальные AirPods")
+        await message.answer("Введите модель устройства:", reply_markup=air_pods_models)
+        await state.set_state(SellAppleStates.entering_model)
         return
     elif category.lower() == "iphone":
         await message.answer("Введите модель устройства:", reply_markup=iphone_models)
@@ -34,7 +36,7 @@ async def enter_model(message: types.Message, state: FSMContext):
     model=message.text
     await state.update_data(model=model)
     if data['category'].lower() == 'airpods' or data['category'].lower() == 'apple watch':
-        await message.answer("Прикрепите фото устройства:")
+        await message.answer("Прикрепите фото устройства:", reply_markup=types.ReplyKeyboardRemove())
         await state.set_state(SellAppleStates.attaching_photos)
         return
     elif data['category'].lower() == 'iphone':
@@ -56,7 +58,7 @@ async def enter_memory(message: types.Message, state: FSMContext):
 @apple_sell_router.message(SellAppleStates.entering_battery)
 async def enter_battery(message: types.Message, state: FSMContext):
     await state.update_data(battery=message.text)
-    await message.answer("Прикрепите фото устройства:")
+    await message.answer("Прикрепите фото устройства:", reply_markup=types.ReplyKeyboardRemove())
     await state.set_state(SellAppleStates.attaching_photos)
 
 @apple_sell_router.message(SellAppleStates.attaching_photos)
@@ -86,7 +88,7 @@ async def confirm_sale(message: types.Message, state: FSMContext):
     
     if data['category'].lower() == 'airpods' or data['category'].lower() == 'apple watch':
         response = (
-                f"Вы хотите продать:"
+                f"Вы хотите продать:\n"
                 f"{data['model']}\n"
                 f"Описание: {data['description']}\n"
                 f"Цена: {data['price']}\n"
@@ -94,7 +96,7 @@ async def confirm_sale(message: types.Message, state: FSMContext):
                 "Подтвердите или отмените заявку.")
     else:
         response = (
-                f"Вы хотите продать:"
+                f"Вы хотите продать:\n"
                 f"{data['model']} ({data['memory']})\n"
                 f"Состояние АКБ: {data['battery']}%\n"
                 f"Описание: {data['description']}\n"
@@ -102,13 +104,13 @@ async def confirm_sale(message: types.Message, state: FSMContext):
                 f"Номер телефона: {phone_number}\n\n"
                 "Подтвердите или отмените заявку.")
     
-    await message.answer(response, reply_markup=confirm_menu)
+    await message.answer_photo(photo=data['photo'], caption=response, reply_markup=confirm_menu)
     await state.set_state(SellAppleStates.confirming)
 
 @apple_sell_router.message(SellAppleStates.confirming)
 async def process_confirmation(message: types.Message, state: FSMContext):
     if message.text == "Подтвердить":
-        await message.answer("Заявка отправлена! В ближайшее время с вами свяжется менеджер.")
+        await message.answer("Заявка отправлена! В ближайшее время с вами свяжется менеджер.", reply_markup=main_menu)
     else:
-        await message.answer("Вы отменили заявку.")
+        await message.answer("Вы отменили заявку.", reply_markup=main_menu)
     await state.clear()
