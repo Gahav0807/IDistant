@@ -1,7 +1,7 @@
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 from states import BuyAppleStates
-from keyboards.apple import apple_device_menu, iphone_models, apple_watch_models, apple_watch_simple_size, apple_watch_se1_size, apple_watch_se2_size, apple_watch_color, air_pods_ways, air_pods_models
+from keyboards.apple import *
 from keyboards.common import condition_menu, while_512_memory_menu, all_memory_menu, color_menu, confirm_menu, share_phone_keyboard, main_menu
 
 apple_buy_router = Router()
@@ -68,6 +68,12 @@ async def process_condition(message: types.Message, state: FSMContext):
             await state.set_state(BuyAppleStates.choosing_model)
             return
         
+    if category.lower() == "ipad":
+        if condition == "Новое":
+            await message.answer("Выберите модель Ipad:", reply_markup=ipad_models)
+            await state.set_state(BuyAppleStates.choosing_model)
+            return
+        
 
 @apple_buy_router.message(BuyAppleStates.pick_up_by_value)
 async def pick_up_value(message: types.Message, state: FSMContext):
@@ -126,6 +132,17 @@ async def choose_model(message: types.Message, state: FSMContext):
         await message.answer("Введите свой номер связи: ", reply_markup=share_phone_keyboard)
         await state.set_state(BuyAppleStates.entering_phone)
 
+    elif category.lower() == "ipad":
+        if model.lower() == "ipad air (5)":
+            memory_menu = ipad_air_5_memory
+        elif model.lower() == "ipad pro 12,9 (6)":
+            memory_menu = ipad_pro_12_9_6_memory
+        elif model.lower() == "ipad pro 11 (5)":
+            memory_menu = ipad_pro_11_5_memory
+        
+        await message.answer("Выберите объем памяти:", reply_markup=memory_menu)
+        await state.set_state(BuyAppleStates.choosing_memory)
+
 @apple_buy_router.message(BuyAppleStates.choosing_size)
 async def choose_size(message: types.Message, state: FSMContext):
     size = message.text
@@ -137,8 +154,38 @@ async def choose_size(message: types.Message, state: FSMContext):
 async def choose_color(message: types.Message, state: FSMContext):
     memory = message.text
     await state.update_data(memory=memory)
+
+    data = await state.get_data()
+    category = data['category']
+    model = data['model']
+
+    if category.lower() == "ipad":
+        if model.lower() == "ipad air (5)":
+           await message.answer("Введите ваш номер телефона для связи или нажмите кнопку ниже:", reply_markup=share_phone_keyboard)
+           await state.set_state(BuyAppleStates.entering_phone)
+           return
+
+        elif model.lower() == "ipad pro 12,9 (6)":
+           access_memory = ipad_pro_12_9_6_access_memory
+           await message.answer("Выберите объем оперативной памяти:", reply_markup=access_memory)
+           await state.set_state(BuyAppleStates.choosing_access_memory)
+           return
+        
+        elif model.lower() == "ipad pro 11 (5)":
+           access_memory = ipad_pro_11_5_access_memory
+           await message.answer("Выберите объем оперативной памяти:", reply_markup=ipad_pro_11_5_access_memory)
+           await state.set_state(BuyAppleStates.choosing_access_memory)
+           return
+        
     await message.answer("Выберите цвет:", reply_markup=color_menu)
     await state.set_state(BuyAppleStates.choosing_color)
+
+@apple_buy_router.message(BuyAppleStates.choosing_access_memory)
+async def enter_phone_number(message: types.Message, state: FSMContext):
+    access_memory = message.text
+    await state.update_data(access_memory=access_memory)
+    await message.answer("Введите ваш номер телефона для связи или нажмите кнопку ниже:", reply_markup=share_phone_keyboard)
+    await state.set_state(BuyAppleStates.entering_phone)
 
 @apple_buy_router.message(BuyAppleStates.choosing_color)
 async def enter_phone_number(message: types.Message, state: FSMContext):
@@ -156,6 +203,7 @@ async def confirm_buy_contact(message: types.Message, state: FSMContext):
     airpods_way = data.get('airpods_way', '')  # Если не AirPods, будет пустая строка
     condition = data.get('condition', '').lower()  # Если нет, то пустая строка
     value_of_airpods = data.get('value_of_airpods', '')
+    access_memory = data.get('access_memory', '')
 
     if condition == 'подобрать':
         await state.update_data(phone_number=message.contact.phone_number)
@@ -176,6 +224,13 @@ async def confirm_buy_contact(message: types.Message, state: FSMContext):
 
         if category.lower() == 'apple watch':
             response = (f"Вы хотите купить: {data['model']} {data['color']}\n"
+                        f"Номер для связи: {phone_number}\n\n"
+                        f"Подтвердите или отмените заявку.")
+            await message.answer(response, reply_markup=confirm_menu)
+            await state.set_state(BuyAppleStates.confirming)
+
+        if category.lower() == 'ipad':
+            response = (f"Вы хотите купить: {data['model']} {data['memory']} {access_memory}\n"
                         f"Номер для связи: {phone_number}\n\n"
                         f"Подтвердите или отмените заявку.")
             await message.answer(response, reply_markup=confirm_menu)

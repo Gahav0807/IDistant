@@ -4,7 +4,8 @@ class BuyAppleStates(StatesGroup):
     choosing_device = State()
     choosing_category = State()    # Выбор категории (Айфон, Эпл Вотч, Подсы, Мак, Айпад)
     choosing_model = State()       # Выбор модели (iPhone, Apple Watch, Подсы, Mac)
-    choosing_memory = State()      # Выбор объёма памяти (только для iPhone)
+    choosing_memory = State()
+    choosing_access_memory = State()      # Выбор объёма памяти (только для iPhone)
     choosing_color = State()       # Выбор цвета (iPhone, Apple Watch)
     entering_phone = State()       # Ввод номера телефона          
     choosing_type = State()        # Выбор типа для Подсов и Мак (Оригинал/Копия)
