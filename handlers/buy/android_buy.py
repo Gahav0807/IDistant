@@ -1,8 +1,10 @@
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
 from states import BuyAndroidStates
 from keyboards.android import buy_android_menu
 from keyboards.common import confirm_menu, main_menu, share_phone_keyboard
+from config import ADMINS
 
 android_buy_router = Router()
 
@@ -46,7 +48,26 @@ async def confirm_sale(message: types.Message, state: FSMContext):
 @android_buy_router.message(BuyAndroidStates.confirming)
 async def process_confirmation(message: types.Message, state: FSMContext):
     if message.text == "Подтвердить":
-        await message.answer("Заявка отправлена! В ближайшее время с вами свяжется менеджер.", reply_markup=main_menu)
+        data = await state.get_data()
+        user_id = message.from_user.id
+        
+        response_admin = (f"🔔 Новая заявка на продажу( Android ):\n\n"
+                          f"📱 Модель: {data['brand_and_model']}\n"
+                          f"💰 Цена: {data['price']} руб.\n"
+                          f"ℹ️ Описание: {data['description']}\n"
+                          f"📞 Контакт: {data['phone_number']}")
+
+        keyboard = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [InlineKeyboardButton(text="Ответить пользователю", callback_data=f"admin_reply:{user_id}")]
+            ]
+        )
+
+        for admin_id in ADMINS:
+            await message.bot.send_photo(chat_id=admin_id, photo=data['photo'], caption=response_admin, reply_markup=keyboard)
+
+        await message.answer("Заявка отправлена! Ожидайте ответа менеджера.", reply_markup=main_menu)
     else:
         await message.answer("Вы отменили заявку.", reply_markup=main_menu)
+
     await state.clear()

@@ -7,9 +7,12 @@ from handlers import start
 from handlers.buy import apple_buy
 from handlers.buy import android_buy
 from handlers.sell import apple_sell
+from handlers.sell import android_sell
 from handlers.repair import apple_repair
 from handlers.repair import android_repair
 from handlers.trade import apple_trade
+
+from callbacks import admin_callbacks
 
 logging.basicConfig(level=logging.INFO)
 
@@ -24,6 +27,9 @@ dp.include_router(apple_trade.apple_trade_router)
 
 dp.include_router(android_repair.android_repair_router)
 dp.include_router(android_buy.android_buy_router)
+dp.include_router(android_sell.android_sell_router)
+
+dp.include_router(admin_callbacks.admin_router)
 
 async def main():
     await dp.start_polling(bot)

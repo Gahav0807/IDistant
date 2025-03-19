@@ -14,13 +14,15 @@ class BuyAppleStates(StatesGroup):
     condition = State() 
     choosing_airpods_way = State()
     way_to_buy = State()
-    confirming = State()    
+    confirming = State()   
+    admin_replying = State() 
 
 class BuyAndroidStates(StatesGroup):
     choosing_brand = State()
     entering_budget = State()
     entering_phone = State()
     confirming = State()
+    admin_replying = State()
 
 class SellAppleStates(StatesGroup):
     entering_device = State()
@@ -32,6 +34,7 @@ class SellAppleStates(StatesGroup):
     entering_price = State()
     entering_phone = State()
     confirming = State()    
+    admin_replying = State()
 
 class SellAndroidStates(StatesGroup):
     entering_model = State()
@@ -40,6 +43,8 @@ class SellAndroidStates(StatesGroup):
     entering_description = State()
     entering_price = State()
     entering_phone = State()
+    confirming = State()
+    admin_replying = State()
 
 class RepairStates(StatesGroup):
     choosing_brand = State()
@@ -48,6 +53,7 @@ class RepairStates(StatesGroup):
     attaching_photos = State()
     entering_phone = State()
     confirming = State()
+    admin_replying = State()
 
 class TradeInStates(StatesGroup):
     choosing_current_model = State()
@@ -58,3 +64,4 @@ class TradeInStates(StatesGroup):
     choosing_new_model = State()
     entering_phone = State()
     confirming = State()
+    admin_replying = State()

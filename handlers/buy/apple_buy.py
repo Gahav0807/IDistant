@@ -3,6 +3,8 @@ from aiogram.fsm.context import FSMContext
 from states import BuyAppleStates
 from keyboards.apple import *
 from keyboards.common import condition_menu, while_512_memory_menu, all_memory_menu, color_menu, confirm_menu, share_phone_keyboard, main_menu
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
+from config import ADMINS
 
 apple_buy_router = Router()
 
@@ -255,9 +257,50 @@ async def confirm_buy_contact(message: types.Message, state: FSMContext):
 @apple_buy_router.message(BuyAppleStates.confirming)
 async def process_confirmation(message: types.Message, state: FSMContext):
     if message.text == "Подтвердить":
-        await message.answer("Готово! Ожидайте обратной связи от администратора", reply_markup=main_menu)
-        return
+        data = await state.get_data()
+        user_id = message.from_user.id
+        
+        # Строим текст ответа для администратора в зависимости от категории устройства
+        category = data['category'].lower()
+        response_admin = f"🔔 Новая заявка на продажу( Apple, {category}):\n\n"
+
+        if category == 'iphone':
+            response_admin += (f"📱 Модель: {data['model']} {data['memory']} {data['color']}\n"
+                               f"💰 Цена: {data['price']} руб.\n"
+                               f"📞 Контакт: {data['phone_number']}\n")
+        
+        elif category == 'apple watch':
+            response_admin += (f"⌚ Модель: {data['model']} {data['color']}\n"
+                               f"💰 Цена: {data['price']} руб.\n"
+                               f"📞 Контакт: {data['phone_number']}\n")
+
+        elif category == 'ipad':
+            response_admin += (f"📱 Модель: {data['model']} {data['memory']} {data['access_memory']}\n"
+                               f"💰 Цена: {data['price']} руб.\n"
+                               f"📞 Контакт: {data['phone_number']}\n")
+        
+        elif category == 'airpods':
+            if data.get('airpods_way', '').lower() == 'оригинал':
+                response_admin += (f"🎧 Модель: {data['model']}\n"
+                                   f"📞 Контакт: {data['phone_number']}\n")
+            else:
+                response_admin += (f"🎧 Модель: {data['model']}\n"
+                                   f"Цена: {data['value_of_airpods']} руб.\n"
+                                   f"📞 Контакт: {data['phone_number']}\n")
+
+        # Отправка сообщения админу
+        keyboard = InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text="Ответить пользователю", callback_data=f"admin_reply:{user_id}")
+            ]]
+        )
+
+        # Отправляем информацию всем администраторам
+        for admin_id in ADMINS:
+            await message.bot.send_message(chat_id=admin_id, text=response_admin, reply_markup=keyboard)
+
+        await message.answer("Заявка отправлена! Ожидайте ответа менеджера.", reply_markup=main_menu)
     else:
-        await message.answer("Вы отменили заявку.")
-    
+        await message.answer("Вы отменили заявку.", reply_markup=main_menu)
+
     await state.clear()
