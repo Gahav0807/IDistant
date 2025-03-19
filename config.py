@@ -1,3 +1,3 @@
 ADMINS = [7868487583, 1573326142 ]  # Замените на реальный ID админа
-TOKEN = "7660203731:AAHSA-rj8simYaPtEBs6H7nnM9FIxXYVuwA"
+TOKEN = "8099146520:AAHWShdZcaq_KryGcJizpoa51s9qV_qf53w"
 
