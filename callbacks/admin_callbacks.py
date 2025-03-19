@@ -24,6 +24,6 @@ async def admin_start_reply(callback: types.CallbackQuery, state: FSMContext):
 async def admin_send_reply(message: types.Message, state: FSMContext):
     data = await state.get_data()
     user_id = data["user_id"]
-    await message.bot.send_message(chat_id=user_id, text=f"📢 Ответ от администратора:\n\n{message.text}")
+    await message.bot.send_message(chat_id=user_id, text=f"📢 Ответ от менеджера:\n\n{message.text}")
     await message.answer("✅ Ваш ответ отправлен пользователю.")
     await state.clear()

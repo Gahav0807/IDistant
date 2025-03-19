@@ -36,4 +36,13 @@ async def start_buy(message: types.Message):
 
 @router.message(lambda message: message.text == "Трейд")
 async def start_buy(message: types.Message):
+    await message.answer("В трейдах могут учавствовать лишь IPhone‼️")
     await message.answer("Выберите категорию устройства:", reply_markup=trade_menu)
+
+@router.message(lambda message: message.text == "О нас")
+async def start_buy(message: types.Message):
+    await message.answer("пумпурум, текст о нас")
+
+@router.message(lambda message: message.text == "Связь с менеджером")
+async def start_buy(message: types.Message):
+    await message.answer("пумпурум, связь с менеджером")

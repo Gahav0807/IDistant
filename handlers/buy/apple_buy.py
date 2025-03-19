@@ -266,17 +266,14 @@ async def process_confirmation(message: types.Message, state: FSMContext):
 
         if category == 'iphone':
             response_admin += (f"📱 Модель: {data['model']} {data['memory']} {data['color']}\n"
-                               f"💰 Цена: {data['price']} руб.\n"
                                f"📞 Контакт: {data['phone_number']}\n")
         
         elif category == 'apple watch':
             response_admin += (f"⌚ Модель: {data['model']} {data['color']}\n"
-                               f"💰 Цена: {data['price']} руб.\n"
                                f"📞 Контакт: {data['phone_number']}\n")
 
         elif category == 'ipad':
             response_admin += (f"📱 Модель: {data['model']} {data['memory']} {data['access_memory']}\n"
-                               f"💰 Цена: {data['price']} руб.\n"
                                f"📞 Контакт: {data['phone_number']}\n")
         
         elif category == 'airpods':
