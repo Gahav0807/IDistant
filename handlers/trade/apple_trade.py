@@ -16,19 +16,19 @@ async def enter_model(message: types.Message, state: FSMContext):
     model=message.text
     await state.update_data(current_model=model)
 
-    await message.answer("Введите объем встроенной памяти, а также оперативную память; пример:\n512/16")
+    await message.answer("Введите объем встроенной памяти, а также оперативную память; пример:\n512/16", reply_markup=types.ReplyKeyboardRemove())
     await state.set_state(TradeInStates.entering_memory)
            
 @apple_trade_router.message(TradeInStates.entering_memory)
 async def enter_memory(message: types.Message, state: FSMContext):
     await state.update_data(memory=message.text)
-    await message.answer("Введите состояние аккумулятора в %:", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer("Введите состояние аккумулятора в %:")
     await state.set_state(TradeInStates.entering_battery)
 
 @apple_trade_router.message(TradeInStates.entering_battery)
 async def enter_battery(message: types.Message, state: FSMContext):
     await state.update_data(battery=message.text)
-    await message.answer("Прикрепите фото устройства:", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer("Прикрепите фото устройства:")
     await state.set_state(TradeInStates.attaching_photos)
 
 @apple_trade_router.message(TradeInStates.attaching_photos)
@@ -60,7 +60,6 @@ async def confirm_sale(message: types.Message, state: FSMContext):
             f"Вы хотите обменять:\n"
             f"Устройство: {data['current_model']}\n"
             f"Описание: {data['description']}\n"
-            f"Цена: {data['price']}\n"
             f"АКБ: {data['battery']}\n\n"
             f"Номер телефона: {phone_number}\n\n"
             f"На модель: {data['new_model']}\n\n"

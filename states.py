@@ -19,7 +19,8 @@ class BuyAppleStates(StatesGroup):
 class BuyAndroidStates(StatesGroup):
     choosing_brand = State()
     entering_budget = State()
-    awaiting_admin_response = State()
+    entering_phone = State()
+    confirming = State()
 
 class SellAppleStates(StatesGroup):
     entering_device = State()
