@@ -18,15 +18,11 @@ async def select_device(message: types.Message, state: FSMContext):
     
     if category.lower() == "airpods":
         await message.answer("Мы скупаем только оригинальные AirPods")
-        await message.answer("Введите модель устройства:", reply_markup=air_pods_models)
+        await message.answer("Введите модель устройства:")
         await state.set_state(SellAppleStates.entering_model)
         return
-    elif category.lower() == "iphone":
-        await message.answer("Введите модель устройства:", reply_markup=iphone_models)
-        await state.set_state(SellAppleStates.entering_model)
-        return
-    elif category.lower() == "apple watch":
-        await message.answer("Введите модель устройства:", reply_markup=apple_watch_models)
+    else:
+        await message.answer("Введите модель устройства:", reply_markup=types.ReplyKeyboardRemove())
         await state.set_state(SellAppleStates.entering_model)
         return
 
@@ -36,17 +32,12 @@ async def enter_model(message: types.Message, state: FSMContext):
     model=message.text
     await state.update_data(model=model)
     if data['category'].lower() == 'airpods' or data['category'].lower() == 'apple watch':
-        await message.answer("Прикрепите фото устройства:", reply_markup=types.ReplyKeyboardRemove())
+        await message.answer("Прикрепите фото устройства:")
         await state.set_state(SellAppleStates.attaching_photos)
         return
-    elif data['category'].lower() == 'iphone':
-        if "Pro" in model or "Plus" in model:
-            memory_menu = all_memory_menu
-        else:
-            memory_menu = while_512_memory_menu
 
-        await message.answer("Выберите объем памяти:", reply_markup=memory_menu)
-        await state.set_state(SellAppleStates.entering_memory)
+    await message.answer("Введите объем встроенной памяти, а также оперативную память; пример:\n512/16")
+    await state.set_state(SellAppleStates.entering_memory)
            
 
 @apple_sell_router.message(SellAppleStates.entering_memory)
@@ -89,7 +80,8 @@ async def confirm_sale(message: types.Message, state: FSMContext):
     if data['category'].lower() == 'airpods' or data['category'].lower() == 'apple watch':
         response = (
                 f"Вы хотите продать:\n"
-                f"{data['model']}\n"
+                f"Устройство: {data['category']}\n"
+                f"Модель: {data['model']}\n"
                 f"Описание: {data['description']}\n"
                 f"Цена: {data['price']}\n"
                 f"Номер телефона: {phone_number}\n\n"
@@ -97,7 +89,8 @@ async def confirm_sale(message: types.Message, state: FSMContext):
     else:
         response = (
                 f"Вы хотите продать:\n"
-                f"{data['model']} ({data['memory']})\n"
+                f"Устройство: {data['category']}\n"
+                f"Модель: {data['model']} ({data['memory']})\n"
                 f"Состояние АКБ: {data['battery']}%\n"
                 f"Описание: {data['description']}\n"
                 f"Цена: {data['price']}\n"

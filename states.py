@@ -46,6 +46,7 @@ class RepairStates(StatesGroup):
     entering_issue_description = State()
     attaching_photos = State()
     entering_phone = State()
+    confirming = State()
 
 class TradeInStates(StatesGroup):
     choosing_current_model = State()
@@ -55,3 +56,4 @@ class TradeInStates(StatesGroup):
     entering_description = State()
     choosing_new_model = State()
     entering_phone = State()
+    confirming = State()

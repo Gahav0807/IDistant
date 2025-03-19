@@ -16,16 +16,13 @@ apple_device_menu = apple_device_menu_builder.as_markup(resize_keyboard=True)
 iphone_models_builder = ReplyKeyboardBuilder()
 iphone_models_builder.button(text="iPhone 13")
 iphone_models_builder.adjust(2)  # Перенос на новую строку
-
 iphone_models_builder.button(text="iPhone 14")
 iphone_models_builder.adjust(2)  # Перенос на новую строку
-
 iphone_models_builder.button(text="iPhone 15")
 iphone_models_builder.button(text="iPhone 15 Plus")
 iphone_models_builder.button(text="iPhone 15 Pro")
 iphone_models_builder.button(text="iPhone 15 Pro Max")
 iphone_models_builder.adjust(2)  # Перенос на новую строку
-
 iphone_models_builder.button(text="iPhone 16")
 iphone_models_builder.button(text="iPhone 16 Plus")
 iphone_models_builder.button(text="iPhone 16 Pro")
@@ -34,6 +31,85 @@ iphone_models_builder.button(text="iPhone 16 Pro Max")
 
 iphone_models_builder.button(text="Главное меню")  # Кнопка для возврата
 iphone_models = iphone_models_builder.as_markup(resize_keyboard=True)
+
+
+all_iphone_models_builder = ReplyKeyboardBuilder()
+# Добавляем все модели iPhone
+all_iphone_models_builder.button(text="iPhone")
+all_iphone_models_builder.button(text="iPhone 3G")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 3GS")
+all_iphone_models_builder.button(text="iPhone 4")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 4s")
+all_iphone_models_builder.button(text="iPhone 5")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 5c")
+all_iphone_models_builder.button(text="iPhone 5s")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 6")
+all_iphone_models_builder.button(text="iPhone 6 Plus")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 6s")
+all_iphone_models_builder.button(text="iPhone 6s Plus")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone SE (1st gen)")
+all_iphone_models_builder.button(text="iPhone 7")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 7 Plus")
+all_iphone_models_builder.button(text="iPhone 8")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 8 Plus")
+all_iphone_models_builder.button(text="iPhone X")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone XR")
+all_iphone_models_builder.button(text="iPhone XS")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone XS Max")
+all_iphone_models_builder.button(text="iPhone 11")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 11 Pro")
+all_iphone_models_builder.button(text="iPhone 11 Pro Max")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone SE (2nd gen)")
+all_iphone_models_builder.button(text="iPhone 12 mini")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 12")
+all_iphone_models_builder.button(text="iPhone 12 Pro")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 12 Pro Max")
+all_iphone_models_builder.button(text="iPhone 13 mini")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 13")
+all_iphone_models_builder.button(text="iPhone 13 Pro")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 13 Pro Max")
+all_iphone_models_builder.button(text="iPhone SE (3rd gen)")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 14")
+all_iphone_models_builder.button(text="iPhone 14 Plus")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 14 Pro")
+all_iphone_models_builder.button(text="iPhone 14 Pro Max")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 15")
+all_iphone_models_builder.button(text="iPhone 15 Plus")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 15 Pro")
+all_iphone_models_builder.button(text="iPhone 15 Pro Max")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 16")
+all_iphone_models_builder.button(text="iPhone 16 Plus")
+all_iphone_models_builder.adjust(2)  # Перенос на новую строку
+all_iphone_models_builder.button(text="iPhone 16 Pro")
+all_iphone_models_builder.button(text="iPhone 16 Pro Max")
+
+# Добавляем кнопку для возврата в главное меню
+all_iphone_models_builder.button(text="Главное меню")
+
+# Настраиваем клавиатуру
+all_iphone_models = all_iphone_models_builder.as_markup(resize_keyboard=True)
+
 
 # apple watch
 apple_watch_models_builder = ReplyKeyboardBuilder()
