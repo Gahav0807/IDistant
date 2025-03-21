@@ -15,7 +15,7 @@ async def repair_apple(message: types.Message, state: FSMContext):
 @apple_repair_router.message(RepairStates.choosing_model)
 async def select_device(message: types.Message, state: FSMContext):
     await state.update_data(model=message.text)
-    await message.answer("Опишите дефект устройства:")
+    await message.answer("Опишите дефект устройства:", reply_markup=types.ReplyKeyboardRemove)
     await state.set_state(RepairStates.entering_issue_description)
 
 @apple_repair_router.message(RepairStates.entering_issue_description)

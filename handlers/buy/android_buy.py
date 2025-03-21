@@ -52,9 +52,8 @@ async def process_confirmation(message: types.Message, state: FSMContext):
         user_id = message.from_user.id
         
         response_admin = (f"🔔 Новая заявка на продажу( Android ):\n\n"
-                          f"📱 Модель: {data['brand_and_model']}\n"
-                          f"💰 Цена: {data['price']} руб.\n"
-                          f"ℹ️ Описание: {data['description']}\n"
+                          f"📱 Модель: {data['brand']}\n"
+                          f"💰 Цена: {data['budget']} руб.\n"
                           f"📞 Контакт: {data['phone_number']}")
 
         keyboard = InlineKeyboardMarkup(
@@ -64,7 +63,7 @@ async def process_confirmation(message: types.Message, state: FSMContext):
         )
 
         for admin_id in ADMINS:
-            await message.bot.send_photo(chat_id=admin_id, photo=data['photo'], caption=response_admin, reply_markup=keyboard)
+            await message.bot.send_message(chat_id=admin_id, text=response_admin, reply_markup=keyboard)
 
         await message.answer("Заявка отправлена! Ожидайте ответа менеджера.", reply_markup=main_menu)
     else:
