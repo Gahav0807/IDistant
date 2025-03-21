@@ -103,10 +103,13 @@ async def process_confirmation(message: types.Message, state: FSMContext):
             ]
         )
 
-        for admin_id in ADMINS:
-            await message.bot.send_photo(chat_id=admin_id, photo=data['photo'], caption=response_admin, reply_markup=keyboard)
+        try:
+            for admin_id in ADMINS:
+                await message.bot.send_photo(chat_id=admin_id, photo=data['photo'], caption=response_admin, reply_markup=keyboard)
 
-        await message.answer("Заявка отправлена! В ближайшее время с вами свяжется менеджер.", reply_markup=main_menu)
+            await message.answer("Заявка отправлена! В ближайшее время с вами свяжется менеджер.", reply_markup=main_menu)
+        except:
+            await message.answer("Ошибка при отправке сообщения администратору. Попробуйте позже.")
     else:
         await message.answer("Вы отменили заявку.", reply_markup=main_menu)
 
