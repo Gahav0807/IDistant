@@ -1,9 +1,7 @@
 version: '3.8'
 
 services:
-  bot:
-    build: .
-    container_name: telegram_bot
-    restart: unless-stopped
-    volumes:
-      - ./:/app
+  build:
+      context: .
+      dockerfile: bot.dockerfile
+  container_name: bot
