@@ -221,57 +221,78 @@ async def confirm_buy_contact(message: types.Message, state: FSMContext):
 
 
 async def confirm_order(message: types.Message, state: FSMContext):
-    """Подтверждение заказа."""
+    """Подтверждение заказа с добавлением смайликов."""
     data = await state.get_data()
     category = data['category'].lower()
     condition = data.get('condition', '').lower()
     phone_number = data['phone_number']
 
+    # Базовые смайлики для всех сообщений
+    confirm_text = "\n\n✅ Подтвердите или ❌ отмените заявку."
+    contact_text = f"\n📞 Контакт: {phone_number}"
+
     if condition == 'подобрать':
         response = (
-            f"Вы хотите подобрать: {data['category']}\n"
-            f"Бюджет: {data['pick_up_by_value']}\n"
-            f"Номер для связи: {phone_number}\n\n"
-            f"Подтвердите или отмените заявку."
+            f"🔍 Вы хотите подобрать: {data['category']}\n"
+            f"💰 Бюджет: {data['pick_up_by_value']} руб."
+            f"{contact_text}"
+            f"{confirm_text}"
         )
     else:
+        device_emojis = {
+            'macbook': '💻',
+            'iphone': '📱',
+            'apple watch': '⌚',
+            'ipad': '📲',
+            'airpods': '🎧'
+        }
+        emoji = device_emojis.get(category, '📦')
+        
         if category == 'macbook':
             response = (
-                f"Вы хотите купить: {data['model']} {data['macbook_cpu']} {data['memory']} \n"
-                f"Номер для связи: {phone_number}\n\n"
-                f"Подтвердите или отмените заявку."
+                f"{emoji} Вы хотите купить: {data['model']} {data['macbook_cpu']} {data['memory']}\n"
+                f"⚡ Процессор: {data['macbook_cpu']}\n"
+                f"💾 Память: {data['memory']}"
+                f"{contact_text}"
+                f"{confirm_text}"
             )
         elif category == 'iphone':
             response = (
-                f"Вы хотите купить: {data['model']} {data['memory']} {data['color']}\n"
-                f"Номер для связи: {phone_number}\n\n"
-                f"Подтвердите или отмените заявку."
+                f"{emoji} Вы хотите купить: {data['model']}\n"
+                f"🎨 Цвет: {data['color']}\n"
+                f"💾 Память: {data['memory']}"
+                f"{contact_text}"
+                f"{confirm_text}"
             )
         elif category == 'apple watch':
             response = (
-                f"Вы хотите купить: {data['model']} {data['color']}\n"
-                f"Номер для связи: {phone_number}\n\n"
-                f"Подтвердите или отмените заявку."
+                f"{emoji} Вы хотите купить: {data['model']}\n"
+                f"📏 Размер: {data.get('size', 'не указан')}\n"
+                f"🎨 Цвет: {data['color']}"
+                f"{contact_text}"
+                f"{confirm_text}"
             )
         elif category == 'ipad':
             response = (
-                f"Вы хотите купить: {data['model']} {data['memory']} {data.get('access_memory', '')}\n"
-                f"Номер для связи: {phone_number}\n\n"
-                f"Подтвердите или отмените заявку."
+                f"{emoji} Вы хотите купить: {data['model']}\n"
+                f"💾 Память: {data['memory']}\n"
+                f"⚡ RAM: {data.get('access_memory', 'не указано')}"
+                f"{contact_text}"
+                f"{confirm_text}"
             )
         elif category == 'airpods':
             if data.get('airpods_way', '').lower() == 'копия':
                 response = (
-                    f"Вы хотите купить: {data['model']}\n"
-                    f"Цена: {data['value_of_airpods']}\n"
-                    f"Номер для связи: {phone_number}\n\n"
-                    f"Подтвердите или отмените заявку."
+                    f"{emoji} Вы хотите купить: {data['model']} (Копия)\n"
+                    f"💲 Цена: {data['value_of_airpods']} руб."
+                    f"{contact_text}"
+                    f"{confirm_text}"
                 )
             else:
                 response = (
-                    f"Вы хотите купить: {data['model']}\n"
-                    f"Номер для связи: {phone_number}\n\n"
-                    f"Подтвердите или отмените заявку."
+                    f"{emoji} Вы хотите купить: {data['model']} (Оригинал)"
+                    f"{contact_text}"
+                    f"{confirm_text}"
                 )
 
     await message.answer(response, reply_markup=confirm_menu)
@@ -284,7 +305,7 @@ async def process_confirmation(message: types.Message, state: FSMContext):
     if message.text == "Подтвердить":
         data = await state.get_data()
         user_id = message.from_user.id
-        category = data['category'].lower()
+        category = data['category']
         condition = data.get('condition', '').lower()
 
         response_admin = f"🔔 Новая заявка на продажу (Apple, {category}):\n\n"
@@ -296,29 +317,28 @@ async def process_confirmation(message: types.Message, state: FSMContext):
                 f"📞 Контакт: {data['phone_number']}\n"
             )
         else:
-            if category == 'macbook':
-                response_admin = (
-                    f"Вы хотите купить: {data['model']} {data['macbook_cpu']} {data['memory']} \n"
-                    f"Номер для связи: {data['phone_number']}\n\n"
-                    f"Подтвердите или отмените заявку."
+            if category.lower() == 'macbook':
+                response_admin += (
+                    f"💻 Модель: {data['model']} {data['macbook_cpu']} {data['memory']} \n"
+                    f"📞 Контакт: {data['phone_number']}\n\n"
                 )
 
-            if category == 'iphone':
+            if category.lower() == 'iphone':
                 response_admin += (
                     f"📱 Модель: {data['model']} {data['memory']} {data['color']}\n"
                     f"📞 Контакт: {data['phone_number']}\n"
                 )
-            elif category == 'apple watch':
+            elif category.lower() == 'apple watch':
                 response_admin += (
                     f"⌚ Модель: {data['model']} {data['color']}\n"
                     f"📞 Контакт: {data['phone_number']}\n"
                 )
-            elif category == 'ipad':
+            elif category.lower() == 'ipad':
                 response_admin += (
                     f"📱 Модель: {data['model']} {data['memory']} {data.get('access_memory', '')}\n"
                     f"📞 Контакт: {data['phone_number']}\n"
                 )
-            elif category == 'airpods':
+            elif category.lower() == 'airpods':
                 if data.get('airpods_way', '').lower() == 'копия':
                     response_admin += (
                         f"🎧 Модель: {data['model']}\n"

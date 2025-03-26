@@ -1,7 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from states import SellAppleStates
-from keyboards.apple import apple_device_menu
+from keyboards.apple import *
 from keyboards.common import main_menu, share_phone_keyboard, confirm_menu
 from config import ADMINS
 
@@ -14,19 +14,42 @@ async def sell_apple(message: types.Message, state: FSMContext):
 
 @apple_sell_router.message(SellAppleStates.entering_device)
 async def select_device(message: types.Message, state: FSMContext):
-    category = message.text
+    category = message.text.lower()
     await state.update_data(category=category)
 
-    if category.lower() == "airpods":
+    if category == "airpods":
         await message.answer("Мы скупаем только оригинальные AirPods")
-    await message.answer("Введите модель устройства:", reply_markup=types.ReplyKeyboardRemove())
-    await state.set_state(SellAppleStates.entering_model)
+
+    if category == "apple watch":
+        await message.answer("Введите модель Apple Watch:", reply_markup=apple_watch_models)
+        await state.set_state(SellAppleStates.entering_model)
+    else:
+        await message.answer("Введите модель устройства:", reply_markup=types.ReplyKeyboardRemove())
+        await state.set_state(SellAppleStates.entering_model)
 
 @apple_sell_router.message(SellAppleStates.entering_model)
 async def enter_model(message: types.Message, state: FSMContext):
     await state.update_data(model=message.text)
-    await message.answer("Введите объем встроенной памяти и оперативную память (например, 512/16):")
-    await state.set_state(SellAppleStates.entering_memory)
+    data = await state.get_data()
+    
+    if data['category'] == "apple watch":
+        await message.answer("Введите размер Apple Watch:")
+        await state.set_state(SellAppleStates.entering_size)
+    else:
+        await message.answer("Введите объем встроенной памяти и оперативную память (например, 512/16):")
+        await state.set_state(SellAppleStates.entering_memory)
+
+@apple_sell_router.message(SellAppleStates.entering_size)
+async def enter_size(message: types.Message, state: FSMContext):
+    await state.update_data(size=message.text)
+    await message.answer("Введите цвет Apple Watch:")
+    await state.set_state(SellAppleStates.entering_color)
+
+@apple_sell_router.message(SellAppleStates.entering_color)
+async def enter_color(message: types.Message, state: FSMContext):
+    await state.update_data(color=message.text)
+    await message.answer("Прикрепите фото устройства:")
+    await state.set_state(SellAppleStates.attaching_photos)
 
 @apple_sell_router.message(SellAppleStates.entering_memory)
 async def enter_memory(message: types.Message, state: FSMContext):
@@ -67,16 +90,18 @@ async def confirm_sale(message: types.Message, state: FSMContext):
     await state.update_data(phone_number=phone_number)
     data = await state.get_data()
 
-    response = (
-        f"Вы хотите продать:\n\n"
-        f"📱 Устройство: {data['category']}\n"
-        f"🔹 Модель: {data['model']} ({data.get('memory', '—')})\n"
-        f"🔋 Состояние АКБ: {data.get('battery', '—')}%\n"
-        f"ℹ️ Описание: {data['description']}\n"
-        f"💰 Цена: {data['price']}\n"
-        f"📞 Контакт: {phone_number}\n\n"
-        "Подтвердите или отмените заявку."
-    )
+    details = [
+        f"📱 Устройство: {data['category']}",
+        f"🔹 Модель: {data['model']} ({data.get('size')})" if data['category'] == 'apple watch' else f"🔹 Модель: {data['model']} ({data.get('memory')})",
+        f"🎨 Цвет: {data.get('color')}" if data.get('color') else None,
+        f"🔋 Состояние АКБ: {data.get('battery')}%" if data.get('battery') else None,
+        f"ℹ️ Описание: {data.get('description')}",
+        f"💰 Цена: {data['price']}",
+        f"📞 Контакт: {phone_number}",
+    ]
+
+    # Фильтруем список, оставляя только непустые строки
+    response = "Вы хотите продать:\n\n" + "\n".join(filter(None, details)) + "\n\nПодтвердите или отмените заявку."
 
     await message.answer_photo(photo=data['photo'], caption=response, reply_markup=confirm_menu)
     await state.set_state(SellAppleStates.confirming)
@@ -87,15 +112,18 @@ async def process_confirmation(message: types.Message, state: FSMContext):
         data = await state.get_data()
         user_id = message.from_user.id
 
-        response_admin = (
-            f"🔔 Новая заявка на продажу( Apple ):\n\n"
-            f"📱 Устройство: {data['category']}\n"
-            f"🔹 Модель: {data['model']} ({data.get('memory', '—')})\n"
-            f"🔋 Состояние АКБ: {data.get('battery', '—')}%\n"
-            f"ℹ️ Описание: {data['description']}\n"
-            f"💰 Цена: {data['price']}\n"
-            f"📞 Контакт: {data['phone_number']}"
-        )
+        details = [
+            f"📱 Устройство: {data['category']}",
+            f"🔹 Модель: {data['model']} ({data.get('size')})" if data['category'] == 'apple watch' else f"🔹 Модель: {data['model']} ({data.get('memory')})",
+            f"🎨 Цвет: {data.get('color')}" if data.get('color') else None,
+            f"🔋 Состояние АКБ: {data.get('battery')}%" if data.get('battery') else None,
+            f"ℹ️ Описание: {data.get('description')}",
+            f"💰 Цена: {data['price']}",
+            f"📞 Контакт: {data['phone_number']}\n\n"
+        ]
+
+        # Фильтруем список, оставляя только непустые строки
+        response_admin = "🔔 Новая заявка на продажу (Apple):\n\n" + "\n".join(filter(None, details))
 
         keyboard = types.InlineKeyboardMarkup(
             inline_keyboard=[
@@ -103,14 +131,11 @@ async def process_confirmation(message: types.Message, state: FSMContext):
             ]
         )
 
-        try:
-            for admin_id in ADMINS:
-                await message.bot.send_photo(chat_id=admin_id, photo=data['photo'], caption=response_admin, reply_markup=keyboard)
+        for admin_id in ADMINS:
+            await message.bot.send_photo(chat_id=admin_id, photo=data['photo'], caption=response_admin, reply_markup=keyboard)
 
-            await message.answer("Заявка отправлена! В ближайшее время с вами свяжется менеджер.", reply_markup=main_menu)
-        except:
-            await message.answer("Ошибка при отправке сообщения администратору. Попробуйте позже.")
+        await message.answer("Заявка отправлена! В ближайшее время с вами свяжется менеджер.", reply_markup=main_menu)
     else:
         await message.answer("Вы отменили заявку.", reply_markup=main_menu)
-
+    
     await state.clear()

@@ -32,10 +32,13 @@ class SellAppleStates(StatesGroup):
     entering_battery = State()
     attaching_photos = State()
     entering_description = State()
+    entering_size = State()
     entering_price = State()
     entering_phone = State()
+    entering_color = State()
     confirming = State()    
     admin_replying = State()
+    
 
 class SellAndroidStates(StatesGroup):
     entering_model = State()
