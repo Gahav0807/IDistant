@@ -2,7 +2,7 @@ from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from states import RepairStates
 from keyboards.apple import all_iphone_models
-from keyboards.common import main_menu, share_phone_keyboard, confirm_menu
+from keyboards.common import main_menu, share_phone_keyboard, confirm_menu, to_main_menu
 from config import ADMINS
 
 apple_repair_router = Router()
@@ -15,7 +15,7 @@ async def repair_apple(message: types.Message, state: FSMContext):
 @apple_repair_router.message(RepairStates.choosing_model)
 async def select_device(message: types.Message, state: FSMContext):
     await state.update_data(model=message.text)
-    await message.answer("Опишите дефект устройства:", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer("Опишите дефект устройства:", reply_markup=to_main_menu)
     await state.set_state(RepairStates.entering_issue_description)
 
 @apple_repair_router.message(RepairStates.entering_issue_description)
