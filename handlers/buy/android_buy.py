@@ -38,7 +38,7 @@ async def confirm_sale(message: types.Message, state: FSMContext):
     response = (f"Вы хотите купить:\n\n"
                 f"📱 Android {data['brand']}.\n"
                 f"💸 Бюджет {data['budget']}.\n"
-                f"📞 Номер для связи: {phone_number}\n\n"
+                f"📞 Номер для связи: +{phone_number}\n\n"
                 "✅ Подтвердите или ❌ отмените заявку"
                 )
     
@@ -54,7 +54,7 @@ async def process_confirmation(message: types.Message, state: FSMContext):
         response_admin = (f"🔔 Новая заявка на продажу( Android ):\n\n"
                           f"📱 Модель: {data['brand']}\n"
                           f"💰 Цена: {data['budget']} руб.\n"
-                          f"📞 Контакт: {data['phone_number']}")
+                          f"📞 Контакт: +{data['phone_number']}")
 
         keyboard = InlineKeyboardMarkup(
             inline_keyboard=[

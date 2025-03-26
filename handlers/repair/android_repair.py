@@ -42,7 +42,7 @@ async def confirm_repair(message: types.Message, state: FSMContext):
         f"📌 Ваша заявка на ремонт:\n\n"
         f"📱 Устройство: {data['model']}\n"
         f"⚠️ Проблема: {data['issue_description']}\n"
-        f"📞 Контакт: {phone_number}\n\n"
+        f"📞 Контакт: +{phone_number}\n\n"
         "Подтвердите или отмените заявку."
     )
 
@@ -59,7 +59,7 @@ async def process_confirmation(message: types.Message, state: FSMContext):
             f"🔧 Новая заявка на ремонт( Android ):\n\n"
             f"📱 Устройство: {data['model']}\n"
             f"⚠️ Проблема: {data['issue_description']}\n"
-            f"📞 Контакт: {data['phone_number']}"
+            f"📞 Контакт: +{data['phone_number']}"
         )
 
         keyboard = types.InlineKeyboardMarkup(

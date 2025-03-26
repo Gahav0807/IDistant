@@ -94,7 +94,7 @@ async def confirm_sale(message: types.Message, state: FSMContext):
         f"🔋 Состояние АКБ: {data.get('battery')}%" if data.get('battery') else None,
         f"ℹ️ Описание: {data.get('description')}",
         f"💰 Цена: {data['price']}",
-        f"📞 Контакт: {phone_number}",
+        f"📞 Контакт: +{phone_number}",
     ]
 
     # Фильтруем список, оставляя только непустые строки
@@ -116,7 +116,7 @@ async def process_confirmation(message: types.Message, state: FSMContext):
             f"🔋 Состояние АКБ: {data.get('battery')}%" if data.get('battery') else None,
             f"ℹ️ Описание: {data.get('description')}",
             f"💰 Цена: {data['price']}",
-            f"📞 Контакт: {data['phone_number']}\n\n"
+            f"📞 Контакт: +{data['phone_number']}\n\n"
         ]
 
         # Фильтруем список, оставляя только непустые строки

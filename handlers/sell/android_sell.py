@@ -51,7 +51,7 @@ async def confirm_sale(message: types.Message, state: FSMContext):
                 f"📱 Модель: {data['brand_and_model']}\n"
                 f"💰 Цена: {data['price']} руб.\n"
                 f"ℹ️ Описание: {data['description']}\n"
-                f"📞 Контакт: {phone_number}\n\n"
+                f"📞 Контакт: +{phone_number}\n\n"
                 "Подтвердите или отмените заявку.")
 
     await message.answer_photo(photo=data['photo'], caption=response, reply_markup=confirm_menu)
@@ -67,7 +67,7 @@ async def process_confirmation(message: types.Message, state: FSMContext):
                           f"📱 Модель: {data['brand_and_model']}\n"
                           f"💰 Цена: {data['price']} руб.\n"
                           f"ℹ️ Описание: {data['description']}\n"
-                          f"📞 Контакт: {data['phone_number']}")
+                          f"📞 Контакт: +{data['phone_number']}")
 
         keyboard = InlineKeyboardMarkup(
             inline_keyboard=[

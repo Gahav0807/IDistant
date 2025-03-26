@@ -62,7 +62,7 @@ async def confirm_sale(message: types.Message, state: FSMContext):
         f"📱 Устройство: {data['current_model']} ({data.get('memory', '—')})\n"
         f"🔋 Состояние АКБ: {data['battery']}%\n"
         f"ℹ️ Описание: {data['description']}\n"
-        f"📞 Контакт: {phone_number}\n\n"
+        f"📞 Контакт: +{phone_number}\n\n"
         f"🔄 На модель: {data['new_model']}\n\n"
         "Подтвердите или отмените заявку."
     )
@@ -81,7 +81,7 @@ async def process_confirmation(message: types.Message, state: FSMContext):
             f"📱 Устройство: {data['current_model']} ({data.get('memory', '—')})\n"
             f"🔋 Состояние АКБ: {data['battery']}%\n"
             f"ℹ️ Описание: {data['description']}\n"
-            f"📞 Контакт: {data['phone_number']}\n\n"
+            f"📞 Контакт: +{data['phone_number']}\n\n"
             f"🔄 На модель: {data['new_model']}"
         )
 
