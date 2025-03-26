@@ -30,7 +30,7 @@ async def upload_photo(message: types.Message, state: FSMContext):
         await message.answer("Пожалуйста, отправьте фото устройства.")
         return
     await state.update_data(photo=message.photo[-1].file_id)
-    await message.answer("Введите ваш номер телефона или нажмите кнопку ниже:", reply_markup=share_phone_keyboard)
+    await message.answer("Поделитесь вашим номером телефона: ", reply_markup=share_phone_keyboard)
     await state.set_state(RepairStates.entering_phone)
 
 @apple_repair_router.message(RepairStates.entering_phone, lambda message: message.contact)

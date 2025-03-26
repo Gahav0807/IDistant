@@ -2,7 +2,7 @@ from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from states import SellAppleStates
 from keyboards.apple import *
-from keyboards.common import main_menu, share_phone_keyboard, confirm_menu
+from keyboards.common import main_menu, share_phone_keyboard, confirm_menu, to_main_menu
 from config import ADMINS
 
 apple_sell_router = Router()
@@ -20,11 +20,8 @@ async def select_device(message: types.Message, state: FSMContext):
     if category == "airpods":
         await message.answer("Мы скупаем только оригинальные AirPods")
 
-    if category == "apple watch":
-        await message.answer("Введите модель Apple Watch:", reply_markup=apple_watch_models)
-        await state.set_state(SellAppleStates.entering_model)
     else:
-        await message.answer("Введите модель устройства:", reply_markup=types.ReplyKeyboardRemove())
+        await message.answer("Введите модель устройства:", reply_markup=to_main_menu)
         await state.set_state(SellAppleStates.entering_model)
 
 @apple_sell_router.message(SellAppleStates.entering_model)
@@ -81,7 +78,7 @@ async def enter_description(message: types.Message, state: FSMContext):
 @apple_sell_router.message(SellAppleStates.entering_price)
 async def enter_price(message: types.Message, state: FSMContext):
     await state.update_data(price=message.text)
-    await message.answer("Введите ваш номер телефона или нажмите кнопку ниже:", reply_markup=share_phone_keyboard)
+    await message.answer("Поделитесь вашим номером телефона: ", reply_markup=share_phone_keyboard)
     await state.set_state(SellAppleStates.entering_phone)
 
 @apple_sell_router.message(SellAppleStates.entering_phone, lambda message: message.contact)

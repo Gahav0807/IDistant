@@ -4,7 +4,7 @@ from states import BuyAppleStates
 from keyboards.apple import *
 from keyboards.common import (
     condition_menu, while_512_memory_menu, all_memory_menu, color_menu,
-    confirm_menu, share_phone_keyboard, main_menu
+    confirm_menu, share_phone_keyboard, main_menu, to_main_menu
 )
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from config import ADMINS
@@ -178,12 +178,12 @@ async def choose_memory(message: types.Message, state: FSMContext):
     category = data['category'].lower()
 
     if category == "macbook":
-        await message.answer("Введите ваш номер телефона для связи или нажмите кнопку ниже:", reply_markup=share_phone_keyboard)
+        await message.answer("Поделитесь вашим номером телефона: ", reply_markup=share_phone_keyboard)
         await state.set_state(BuyAppleStates.entering_phone)
 
     elif category == "ipad":
         if data['model'].lower() == "ipad air (5)":
-            await message.answer("Введите ваш номер телефона для связи или нажмите кнопку ниже:", reply_markup=share_phone_keyboard)
+            await message.answer("Поделитесь вашим номером телефона:", reply_markup=share_phone_keyboard)
             await state.set_state(BuyAppleStates.entering_phone)
         else:
             access_memory = ipad_pro_12_9_6_access_memory if data['model'].lower() == "ipad pro 12,9 (6)" else ipad_pro_11_5_access_memory
@@ -199,7 +199,7 @@ async def choose_access_memory(message: types.Message, state: FSMContext):
     """Обработка выбора оперативной памяти для iPad."""
     access_memory = message.text
     await state.update_data(access_memory=access_memory)
-    await message.answer("Введите ваш номер телефона для связи или нажмите кнопку ниже:", reply_markup=share_phone_keyboard)
+    await message.answer("Поделитесь вашим номером телефона: ", reply_markup=share_phone_keyboard)
     await state.set_state(BuyAppleStates.entering_phone)
 
 
@@ -208,7 +208,7 @@ async def choose_color(message: types.Message, state: FSMContext):
     """Обработка выбора цвета устройства."""
     color = message.text
     await state.update_data(color=color)
-    await message.answer("Введите ваш номер телефона для связи или нажмите кнопку ниже:", reply_markup=share_phone_keyboard)
+    await message.answer("Поделитесь вашим номером телефона: ", reply_markup=share_phone_keyboard)
     await state.set_state(BuyAppleStates.entering_phone)
 
 

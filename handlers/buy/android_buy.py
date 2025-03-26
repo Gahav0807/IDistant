@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
 from states import BuyAndroidStates
 from keyboards.android import buy_android_menu
-from keyboards.common import confirm_menu, main_menu, share_phone_keyboard
+from keyboards.common import confirm_menu, main_menu, share_phone_keyboard, to_main_menu
 from config import ADMINS
 
 android_buy_router = Router()
@@ -19,14 +19,14 @@ async def buy_android(message: types.Message, state: FSMContext):
 async def enter_android_budget(message: types.Message, state: FSMContext):
     brand = message.text
     await state.update_data(brand=brand)
-    await message.answer("Введите ваш бюджет:", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer("Введите ваш бюджет:", reply_markup=to_main_menu)
     await state.set_state(BuyAndroidStates.entering_budget)
 
 @android_buy_router.message(BuyAndroidStates.entering_budget)
 async def awaiting_admin_response(message: types.Message, state: FSMContext):
     budget = message.text
     await state.update_data(budget=budget)
-    await message.answer("Введите ваш номер телефона:", reply_markup=share_phone_keyboard)
+    await message.answer("Поделитесь вашим номером телефона:", reply_markup=share_phone_keyboard)
     await state.set_state(BuyAndroidStates.entering_phone)
 
 @android_buy_router.message(BuyAndroidStates.entering_phone, lambda message: message.contact)
@@ -36,10 +36,10 @@ async def confirm_sale(message: types.Message, state: FSMContext):
     data = await state.get_data()
     
     response = (f"Вы хотите купить:\n\n"
-                f"Android {data['brand']}.\n"
-                f"Бюджет {data['budget']}.\n"
-                f"Номер для связи: {phone_number}\n\n"
-                "Подтвердите или отмените заявку."
+                f"📱 Android {data['brand']}.\n"
+                f"💸 Бюджет {data['budget']}.\n"
+                f"📞 Номер для связи: {phone_number}\n\n"
+                "✅ Подтвердите или ❌ отмените заявку"
                 )
     
     await message.answer(response, reply_markup=confirm_menu)

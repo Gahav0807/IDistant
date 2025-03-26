@@ -2,7 +2,7 @@ from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
 from states import SellAndroidStates
-from keyboards.common import confirm_menu, main_menu, share_phone_keyboard
+from keyboards.common import confirm_menu, main_menu, share_phone_keyboard, to_main_menu
 from config import ADMINS
 
 android_sell_router = Router()
@@ -11,7 +11,7 @@ android_sell_router = Router()
 
 @android_sell_router.message(lambda message: message.text == "Android💸")
 async def buy_android(message: types.Message, state: FSMContext):
-    await message.answer("Введите бренд & модель телефона:", reply_markup=ReplyKeyboardRemove())
+    await message.answer("Введите бренд & модель телефона:", reply_markup=to_main_menu)
     await state.set_state(SellAndroidStates.entering_model)
 
 @android_sell_router.message(SellAndroidStates.entering_model)
@@ -38,7 +38,7 @@ async def upload_photo(message: types.Message, state: FSMContext):
 @android_sell_router.message(SellAndroidStates.entering_description)
 async def awaiting_admin_response(message: types.Message, state: FSMContext):
     await state.update_data(description=message.text)
-    await message.answer("Введите ваш номер телефона:", reply_markup=share_phone_keyboard)
+    await message.answer("Поделитесь вашим номером телефона: ", reply_markup=share_phone_keyboard)
     await state.set_state(SellAndroidStates.entering_phone)
 
 @android_sell_router.message(SellAndroidStates.entering_phone, lambda message: message.contact)

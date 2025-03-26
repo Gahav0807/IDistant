@@ -1,6 +1,10 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram.types import KeyboardButton
 
+to_main_menu_builder = ReplyKeyboardBuilder()
+to_main_menu_builder.button(text="Главное меню")
+to_main_menu = to_main_menu_builder.as_markup(resize_keyboard=True)
+
 # Главное меню
 main_menu_builder = ReplyKeyboardBuilder()
 main_menu_builder.button(text="Купить")

@@ -2,7 +2,7 @@ from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from states import TradeInStates
 from keyboards.apple import all_iphone_models
-from keyboards.common import main_menu, share_phone_keyboard, confirm_menu
+from keyboards.common import main_menu, share_phone_keyboard, confirm_menu,to_main_menu
 from config import ADMINS
 
 apple_trade_router = Router()
@@ -15,7 +15,7 @@ async def sell_apple(message: types.Message, state: FSMContext):
 @apple_trade_router.message(TradeInStates.choosing_current_model)
 async def enter_model(message: types.Message, state: FSMContext):
     await state.update_data(current_model=message.text)
-    await message.answer("Введите объем встроенной памяти, а также оперативную память; пример:\n512/16", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer("Введите объем встроенной памяти, а также оперативную память; пример:\n512/16", reply_markup=to_main_menu)
     await state.set_state(TradeInStates.entering_memory)
 
 @apple_trade_router.message(TradeInStates.entering_memory)
@@ -48,7 +48,7 @@ async def enter_description(message: types.Message, state: FSMContext):
 @apple_trade_router.message(TradeInStates.choosing_new_model)
 async def enter_price(message: types.Message, state: FSMContext):
     await state.update_data(new_model=message.text)
-    await message.answer("Введите ваш номер телефона или нажмите кнопку ниже:", reply_markup=share_phone_keyboard)
+    await message.answer("Поделитесь вашим номером телефона: ", reply_markup=share_phone_keyboard)
     await state.set_state(TradeInStates.entering_phone)
 
 @apple_trade_router.message(TradeInStates.entering_phone, lambda message: message.contact)
