@@ -1,7 +1,12 @@
 version: '3.8'
 
 services:
-  build:
+  bot:  # Добавлено имя сервиса
+    build:
       context: .
       dockerfile: bot.dockerfile
-  container_name: bot
+    container_name: bot
+    restart: unless-stopped  # Рекомендуется добавить
+    env_file: .env  # Если используете переменные окружения
+    volumes:
+      - .:/app  # Более правильный формат монтирования
