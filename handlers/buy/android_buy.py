@@ -31,6 +31,7 @@ async def awaiting_admin_response(message: types.Message, state: FSMContext):
 
 @android_buy_router.message(BuyAndroidStates.entering_phone, lambda message: message.contact)
 async def confirm_sale(message: types.Message, state: FSMContext):
+    username = message.from_user.username
     phone_number = message.contact.phone_number
     await state.update_data(phone_number=phone_number)
     data = await state.get_data()
@@ -38,7 +39,8 @@ async def confirm_sale(message: types.Message, state: FSMContext):
     response = (f"Вы хотите купить:\n\n"
                 f"📱 Android {data['brand']}.\n"
                 f"💸 Бюджет {data['budget']}.\n"
-                f"📞 Номер для связи: +{phone_number}\n\n"
+                f"📞 Контакты: {phone_number}\n\n"
+                f"Telegram: @{username}\n"
                 "✅ Подтвердите или ❌ отмените заявку"
                 )
     
@@ -50,11 +52,14 @@ async def process_confirmation(message: types.Message, state: FSMContext):
     if message.text == "Подтвердить":
         data = await state.get_data()
         user_id = message.from_user.id
+        username = message.from_user.username
         
         response_admin = (f"🔔 Новая заявка на продажу( Android ):\n\n"
                           f"📱 Модель: {data['brand']}\n"
                           f"💰 Цена: {data['budget']} руб.\n"
-                          f"📞 Контакт: +{data['phone_number']}")
+                          f"📞 Контакт: {data['phone_number']}\n\n"
+                          f"Telegram: @{username}\n")
+                          
 
         keyboard = InlineKeyboardMarkup(
             inline_keyboard=[
@@ -68,7 +73,7 @@ async def process_confirmation(message: types.Message, state: FSMContext):
 
             await message.answer("Заявка отправлена! Ожидайте ответа менеджера.", reply_markup=main_menu)
         except:
-            await message.answer("Ошибка при отправке сообщения администратору. Попробуйте позже.")
+            await message.answer("Ошибка при отправке сообщения администратору. Попробуйте позже.", reply_markup=main_menu)
     else:
         await message.answer("Вы отменили заявку.", reply_markup=main_menu)
 

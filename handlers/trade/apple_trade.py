@@ -53,6 +53,7 @@ async def enter_price(message: types.Message, state: FSMContext):
 
 @apple_trade_router.message(TradeInStates.entering_phone, lambda message: message.contact)
 async def confirm_sale(message: types.Message, state: FSMContext):
+    username = message.from_user.username
     phone_number = message.contact.phone_number
     await state.update_data(phone_number=phone_number)
     data = await state.get_data()
@@ -62,8 +63,10 @@ async def confirm_sale(message: types.Message, state: FSMContext):
         f"📱 Устройство: {data['current_model']} ({data.get('memory', '—')})\n"
         f"🔋 Состояние АКБ: {data['battery']}%\n"
         f"ℹ️ Описание: {data['description']}\n"
-        f"📞 Контакт: +{phone_number}\n\n"
+        f"📞 Контакт: {phone_number}\n\n"
         f"🔄 На модель: {data['new_model']}\n\n"
+        f"Telegram: @{username}\n\n"
+        
         "Подтвердите или отмените заявку."
     )
 
@@ -73,6 +76,7 @@ async def confirm_sale(message: types.Message, state: FSMContext):
 @apple_trade_router.message(TradeInStates.confirming)
 async def process_confirmation(message: types.Message, state: FSMContext):
     if message.text == "Подтвердить":
+        username = message.from_user.username
         data = await state.get_data()
         user_id = message.from_user.id
 
@@ -81,8 +85,9 @@ async def process_confirmation(message: types.Message, state: FSMContext):
             f"📱 Устройство: {data['current_model']} ({data.get('memory', '—')})\n"
             f"🔋 Состояние АКБ: {data['battery']}%\n"
             f"ℹ️ Описание: {data['description']}\n"
-            f"📞 Контакт: +{data['phone_number']}\n\n"
-            f"🔄 На модель: {data['new_model']}"
+            f"📞 Контакт: {data['phone_number']}\n\n"
+            f"🔄 На модель: {data['new_model']}\n\n"
+            f"Telegram: @{username}\n"
         )
 
         keyboard = types.InlineKeyboardMarkup(
@@ -97,7 +102,7 @@ async def process_confirmation(message: types.Message, state: FSMContext):
 
             await message.answer("Заявка отправлена! В ближайшее время с вами свяжется менеджер.", reply_markup=main_menu)
         except:
-            await message.answer("Ошибка при отправке сообщения администратору. Попробуйте позже.")
+            await message.answer("Ошибка при отправке сообщения администратору. Попробуйте позже.", reply_markup=main_menu)
     else:
         await message.answer("Вы отменили заявку.", reply_markup=main_menu)
 

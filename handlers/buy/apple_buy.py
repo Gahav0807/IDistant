@@ -226,10 +226,11 @@ async def confirm_order(message: types.Message, state: FSMContext):
     category = data['category'].lower()
     condition = data.get('condition', '').lower()
     phone_number = data['phone_number']
+    username = message.from_user.username
 
     # Базовые смайлики для всех сообщений
     confirm_text = "\n\n✅ Подтвердите или ❌ отмените заявку."
-    contact_text = f"\n📞 Контакт: +{phone_number}"
+    contact_text = f"\n📞 Контакт: {phone_number}\n\nTelegram: @{username}"
 
     if condition == 'подобрать':
         response = (
@@ -303,6 +304,7 @@ async def confirm_order(message: types.Message, state: FSMContext):
 async def process_confirmation(message: types.Message, state: FSMContext):
     """Обработка подтверждения заказа."""
     if message.text == "Подтвердить":
+        username = message.from_user.username
         data = await state.get_data()
         user_id = message.from_user.id
         category = data['category']
@@ -314,41 +316,48 @@ async def process_confirmation(message: types.Message, state: FSMContext):
                 f"Пользователь желает подобрать девайс!\n\n"
                 f"📱 Категория: {data['category']}\n"
                 f"💸 Бюджет: {data['pick_up_by_value']}\n"
-                f"📞 Контакт: +{data['phone_number']}\n"
+                f"📞 Контакт: {data['phone_number']}\n\n"
+                f"Telegram: @{username}\n"
             )
         else:
             if category.lower() == 'macbook':
                 response_admin += (
                     f"💻 Модель: {data['model']} {data['macbook_cpu']} {data['memory']} \n"
-                    f"📞 Контакт: +{data['phone_number']}\n\n"
+                    f"📞 Контакт: {data['phone_number']}\n\n"
+                    f"Telegram: @{username}\n"
                 )
 
             if category.lower() == 'iphone':
                 response_admin += (
                     f"📱 Модель: {data['model']} {data['memory']} {data['color']}\n"
-                    f"📞 Контакт: +{data['phone_number']}\n"
+                    f"📞 Контакт: {data['phone_number']}\n\n"
+                    f"Telegram: @{username}\n"
                 )
             elif category.lower() == 'apple watch':
                 response_admin += (
                     f"⌚ Модель: {data['model']} {data['color']}\n"
-                    f"📞 Контакт: +{data['phone_number']}\n"
+                    f"📞 Контакт: {data['phone_number']}\n\n"
+                    f"Telegram: @{username}\n"
                 )
             elif category.lower() == 'ipad':
                 response_admin += (
                     f"📱 Модель: {data['model']} {data['memory']} {data.get('access_memory', '')}\n"
-                    f"📞 Контакт: +{data['phone_number']}\n"
+                    f"📞 Контакт: {data['phone_number']}\n\n"
+                    f"Telegram: @{username}\n"
                 )
             elif category.lower() == 'airpods':
                 if data.get('airpods_way', '').lower() == 'копия':
                     response_admin += (
                         f"🎧 Модель: {data['model']}\n"
                         f"💸 Цена: {data['value_of_airpods']} руб.\n"
-                        f"📞 Контакт: +{data['phone_number']}\n"
+                        f"📞 Контакт: {data['phone_number']}\n\n"
+                        f"Telegram: @{username}\n"
                     )
                 else:
                     response_admin += (
                         f"🎧 Модель: {data['model']}\n"
-                        f"📞 Контакт: +{data['phone_number']}\n"
+                        f"📞 Контакт: {data['phone_number']}\n\n"
+                        f"Telegram: @{username}\n"
                     )
 
         keyboard = InlineKeyboardMarkup(
@@ -363,7 +372,7 @@ async def process_confirmation(message: types.Message, state: FSMContext):
 
             await message.answer("Заявка отправлена! Ожидайте ответа менеджера.", reply_markup=main_menu)
         except:
-            await message.answer("Ошибка при отправке сообщения администратору. Попробуйте позже.")
+            await message.answer("Ошибка при отправке сообщения администратору. Попробуйте позже.", reply_markup=main_menu)
     else:
         await message.answer("Вы отменили заявку.", reply_markup=main_menu)
 

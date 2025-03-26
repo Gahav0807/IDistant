@@ -83,6 +83,7 @@ async def enter_price(message: types.Message, state: FSMContext):
 
 @apple_sell_router.message(SellAppleStates.entering_phone, lambda message: message.contact)
 async def confirm_sale(message: types.Message, state: FSMContext):
+    username = message.from_user.username
     phone_number = message.contact.phone_number
     await state.update_data(phone_number=phone_number)
     data = await state.get_data()
@@ -94,7 +95,8 @@ async def confirm_sale(message: types.Message, state: FSMContext):
         f"🔋 Состояние АКБ: {data.get('battery')}%" if data.get('battery') else None,
         f"ℹ️ Описание: {data.get('description')}",
         f"💰 Цена: {data['price']}",
-        f"📞 Контакт: +{phone_number}",
+        f"📞 Контакт: {phone_number}\n\n",
+        f"Telegram: @{username}"
     ]
 
     # Фильтруем список, оставляя только непустые строки
@@ -106,6 +108,7 @@ async def confirm_sale(message: types.Message, state: FSMContext):
 @apple_sell_router.message(SellAppleStates.confirming)
 async def process_confirmation(message: types.Message, state: FSMContext):
     if message.text == "Подтвердить":
+        username = message.from_user.username
         data = await state.get_data()
         user_id = message.from_user.id
 
@@ -116,7 +119,8 @@ async def process_confirmation(message: types.Message, state: FSMContext):
             f"🔋 Состояние АКБ: {data.get('battery')}%" if data.get('battery') else None,
             f"ℹ️ Описание: {data.get('description')}",
             f"💰 Цена: {data['price']}",
-            f"📞 Контакт: +{data['phone_number']}\n\n"
+            f"📞 Контакт: {data['phone_number']}\n\n"
+            f"Telegram: @{username}\n"
         ]
 
         # Фильтруем список, оставляя только непустые строки
@@ -128,10 +132,13 @@ async def process_confirmation(message: types.Message, state: FSMContext):
             ]
         )
 
-        for admin_id in ADMINS:
-            await message.bot.send_photo(chat_id=admin_id, photo=data['photo'], caption=response_admin, reply_markup=keyboard)
+        try:
+            for admin_id in ADMINS:
+                await message.bot.send_photo(chat_id=admin_id, photo=data['photo'], caption=response_admin, reply_markup=keyboard)
 
-        await message.answer("Заявка отправлена! В ближайшее время с вами свяжется менеджер.", reply_markup=main_menu)
+            await message.answer("Заявка отправлена! В ближайшее время с вами свяжется менеджер.", reply_markup=main_menu)
+        except:
+            await message.answer("Ошибка при отправке сообщения администратору. Попробуйте позже.", reply_markup=main_menu)
     else:
         await message.answer("Вы отменили заявку.", reply_markup=main_menu)
     
