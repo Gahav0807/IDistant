@@ -8,6 +8,8 @@ apple_device_menu_builder.adjust(2)  # Перенос на новую строк
 apple_device_menu_builder.button(text="AirPods")
 # apple_device_menu_builder.button(text="Mac")
 apple_device_menu_builder.button(text="IPad")
+apple_device_menu_builder.button(text="MacBook")
+apple_device_menu_builder.button(text="Другое")
 apple_device_menu_builder.adjust(1)
 apple_device_menu_builder.button(text="Главное меню")
 apple_device_menu = apple_device_menu_builder.as_markup(resize_keyboard=True)
@@ -81,9 +83,10 @@ all_iphone_models = all_iphone_models_builder.as_markup(resize_keyboard=True)
 # apple watch
 apple_watch_models_builder = ReplyKeyboardBuilder()
 apple_watch_models_builder.button(text="Apple Watch Series 8")
+apple_watch_models_builder.button(text="Apple Watch Series 9")
+apple_watch_models_builder.button(text="Apple Watch Series 10")
 apple_watch_models_builder.button(text="Apple Watch SE(1 поколения)")
 apple_watch_models_builder.adjust(2)  # Перенос на новую строку
-apple_watch_models_builder.button(text="Apple Watch Series 9")
 apple_watch_models_builder.button(text="Apple Watch SE(2 поколения)")
 apple_watch_models_builder.adjust(2)  # Перенос на новую строку
 apple_watch_models_builder.button(text="Главное меню")  # Кнопка для возврата
@@ -95,6 +98,13 @@ apple_watch_simple_size_builder.button(text="45 мм")
 apple_watch_simple_size_builder.adjust(2)  
 apple_watch_simple_size_builder.button(text="Главное меню")  # Кнопка для возврата
 apple_watch_simple_size = apple_watch_simple_size_builder.as_markup(resize_keyboard=True)
+
+apple_watch_10_builder = ReplyKeyboardBuilder()
+apple_watch_10_builder.button(text="42 мм")
+apple_watch_10_builder.button(text="46 мм")
+apple_watch_10_builder.adjust(2)  
+apple_watch_10_builder.button(text="Главное меню")  # Кнопка для возврата
+apple_watch_10_size = apple_watch_10_builder.as_markup(resize_keyboard=True)
 
 apple_watch_se1_size_builder = ReplyKeyboardBuilder()
 apple_watch_se1_size_builder.button(text="40 мм")
@@ -189,3 +199,34 @@ ipad_pro_11_5_access_memory_builder.button(text="16 ГБ")
 ipad_pro_11_5_access_memory_builder.adjust(1)
 ipad_pro_11_5_access_memory_builder.button(text="Главное меню")
 ipad_pro_11_5_access_memory = ipad_pro_11_5_access_memory_builder.as_markup(resize_keyboard=True)
+
+macbook_cpu_builder = ReplyKeyboardBuilder()
+macbook_cpu_builder.button(text="M1")
+macbook_cpu_builder.button(text="M2")
+macbook_cpu_builder.button(text="M3")
+macbook_cpu = macbook_cpu_builder.as_markup(resize_keyboard=True)
+
+macbook_memory_builder = ReplyKeyboardBuilder()
+macbook_memory_builder.button(text="256")
+macbook_memory_builder.button(text="512")
+macbook_memory = macbook_memory_builder.as_markup(resize_keyboard=True)
+
+macbook_m1_models_builder = ReplyKeyboardBuilder()
+macbook_m1_models_builder.button(text="Macbook Air")
+macbook_m1_models_builder.button(text="Macbook Pro")
+macbook_m1_models = macbook_m1_models_builder.as_markup(resize_keyboard=True)
+
+macbook_m2_models_builder = ReplyKeyboardBuilder()
+macbook_m2_models_builder.button(text="Macbook Air(13 дюймов)")
+macbook_m2_models_builder.button(text="Macbook Air(15 дюймов)")
+macbook_m2_models_builder.button(text="Macbook Pro(13 дюймов)")
+macbook_m2_models = macbook_m2_models_builder.as_markup(resize_keyboard=True)
+
+macbook_m3_models_builder = ReplyKeyboardBuilder()
+macbook_m3_models_builder.button(text="Macbook Air(13 дюймов)")
+macbook_m3_models_builder.button(text="Macbook Air(15 дюймов)")
+macbook_m3_models_builder.button(text="Macbook Pro(14 дюймов)")
+macbook_m3_models = macbook_m3_models_builder.as_markup(resize_keyboard=True)
+
+
+

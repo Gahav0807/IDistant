@@ -16,6 +16,7 @@ class BuyAppleStates(StatesGroup):
     way_to_buy = State()
     confirming = State()   
     admin_replying = State() 
+    choosing_macbook_cpu = State()
 
 class BuyAndroidStates(StatesGroup):
     choosing_brand = State()

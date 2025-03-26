@@ -41,8 +41,8 @@ async def start_buy(message: types.Message):
 
 @router.message(lambda message: message.text == "О нас")
 async def start_buy(message: types.Message):
-    await message.answer("пумпурум, текст о нас")
+    await message.answer("IDistant🔥")
 
 @router.message(lambda message: message.text == "Связь с менеджером")
 async def start_buy(message: types.Message):
-    await message.answer("пумпурум, связь с менеджером")
+    await message.answer("⚙️ Наш менеджер: ")
